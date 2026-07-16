@@ -6,8 +6,18 @@
   <title>OrangMods — Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
-    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.ready) {
-      window.Telegram.WebApp.ready();
+    // Очищаем старые заказы при загрузке
+    try {
+      const saved = localStorage.getItem('pendingOrder');
+      if (saved) {
+        const data = JSON.parse(saved);
+        // Если заказу больше 5 минут - удаляем
+        if (data && data.timestamp && (Date.now() - data.timestamp > 300000)) {
+          localStorage.removeItem('pendingOrder');
+        }
+      }
+    } catch(e) {
+      localStorage.removeItem('pendingOrder');
     }
   </script>
   <style>
@@ -593,13 +603,11 @@
       <div style="font-weight:600;color:#d6cec4;font-size:15px;margin-bottom:8px;">🔓 Функционал</div>
       <div class="slider-block">
 
-        <!-- Большая цифра -->
         <div class="slider-value-display">
           <span class="slider-big-num" id="sliderNumDisplay">78</span>
           <span class="slider-pct-sign">%</span>
         </div>
 
-        <!-- Тир и цена -->
         <div class="slider-tier-badge">
           <div>
             <div class="tier-label">Ценовой диапазон</div>
@@ -608,45 +616,22 @@
           <div class="tier-price" id="sliderTierPrice">100⭐</div>
         </div>
 
-        <!-- Ползунок -->
         <div class="range-wrap">
           <input type="range" id="funcSlider" min="1" max="95" value="78" step="1">
-          <!-- Прогресс-цвет заливается через JS -->
         </div>
 
-        <!-- Засечки -->
         <div class="slider-ticks">
-          <div class="tick" data-val="1">
-            <div class="tick-line"></div>
-            <span class="tick-label">1%</span>
-          </div>
-          <div class="tick" data-val="50">
-            <div class="tick-line"></div>
-            <span class="tick-label">50%</span>
-          </div>
-          <div class="tick" data-val="70">
-            <div class="tick-line"></div>
-            <span class="tick-label">70%</span>
-          </div>
-          <div class="tick" data-val="80">
-            <div class="tick-line"></div>
-            <span class="tick-label">80%</span>
-          </div>
-          <div class="tick" data-val="95">
-            <div class="tick-line"></div>
-            <span class="tick-label">95%</span>
-          </div>
+          <div class="tick" data-val="1"><div class="tick-line"></div><span class="tick-label">1%</span></div>
+          <div class="tick" data-val="50"><div class="tick-line"></div><span class="tick-label">50%</span></div>
+          <div class="tick" data-val="70"><div class="tick-line"></div><span class="tick-label">70%</span></div>
+          <div class="tick" data-val="80"><div class="tick-line"></div><span class="tick-label">80%</span></div>
+          <div class="tick" data-val="95"><div class="tick-line"></div><span class="tick-label">95%</span></div>
         </div>
 
-        <!-- Цветовые полосы диапазонов -->
         <div class="tier-zones">
-          <!-- 1–50: 53% ширины от 95 -->
           <div class="tier-zone" id="zone1" style="flex:50;background:#60a5fa;"></div>
-          <!-- 51–70: 20 единиц -->
           <div class="tier-zone" id="zone2" style="flex:20;background:#a78bfa;"></div>
-          <!-- 71–80: 10 единиц -->
           <div class="tier-zone" id="zone3" style="flex:10;background:#fb923c;"></div>
-          <!-- 81–95: 15 единиц -->
           <div class="tier-zone" id="zone4" style="flex:15;background:#FFA347;"></div>
         </div>
 
@@ -845,13 +830,25 @@
 (function () {
   'use strict';
 
+  // ===== ОЧИСТКА СТАРЫХ ЗАКАЗОВ =====
+  try {
+    const saved = localStorage.getItem('pendingOrder');
+    if (saved) {
+      const data = JSON.parse(saved);
+      if (data && data.timestamp && (Date.now() - data.timestamp > 300000)) {
+        localStorage.removeItem('pendingOrder');
+      }
+    }
+  } catch(e) {
+    localStorage.removeItem('pendingOrder');
+  }
+
   // ===== КОНФИГ =====
   const ADMIN_IDS   = [7558811554, 7597506876];
   const API_BASE    = 'https://orangmods.onrender.com/api/webapp';
   const ADMIN_LOGIN = 'Ad09oLq@Gmail.yandex';
   const ADMIN_PASS  = 'pa9w9diqllOoeje';
 
-  // Ценовые диапазоны ползунка
   const TIERS = [
     { min: 1,  max: 50, price: 40,  label: '1–50%',  color: '#60a5fa' },
     { min: 51, max: 70, price: 80,  label: '51–70%', color: '#a78bfa' },
@@ -1007,37 +1004,25 @@
   function updateSliderUI(val) {
     sliderValue = val;
     const tier = getTier(val);
-
-    // Большой номер
     numDisplay.textContent = val;
-
-    // Название и цена диапазона
     tierName.textContent  = tier.label;
     tierPrice.textContent = tier.price + '⭐';
-
-    // Подсветка активной зоны
     zones.forEach((z, i) => {
       if (!z) return;
       z.classList.toggle('active', TIERS[i] === tier);
     });
-
-    // Градиент ползунка
     const pct = ((val - 1) / (95 - 1)) * 100;
     slider.style.background = `linear-gradient(to right, ${tier.color} 0%, ${tier.color} ${pct}%, rgba(255,255,255,0.06) ${pct}%, rgba(255,255,255,0.06) 100%)`;
-
-    // Засечки
     document.querySelectorAll('.tick').forEach(tick => {
       const tv = parseInt(tick.dataset.val, 10);
       const curTier = getTier(tv);
       tick.classList.toggle('active', curTier === tier);
     });
-
     updateConfig();
   }
 
   slider.addEventListener('input', () => updateSliderUI(parseInt(slider.value, 10)));
 
-  // Клик по засечкам
   document.querySelectorAll('.tick').forEach(tick => {
     tick.addEventListener('click', () => {
       const v = parseInt(tick.dataset.val, 10);
@@ -1110,8 +1095,8 @@
         user_id:    currentUser.id,
         username:   currentUser.username || 'user',
         first_name: currentUser.first_name || 'Пользователь',
-        func_level: order.funcValue + '%',   // точное значение слайдера
-        func_tier:  order.funcTier,          // диапазон для отображения
+        func_level: order.funcValue + '%',
+        func_tier:  order.funcTier,
         func_price: order.funcPrice,
         duration:   order.durLabel,
         duration_price: order.durationCost,
@@ -1122,7 +1107,7 @@
         hasPendingOrder = true;
         pendingOrderId  = result.order_id;
         setText('waitingOrderId', result.order_id);
-        try { localStorage.setItem('pendingOrder', JSON.stringify({ order_id: result.order_id })); } catch(_){}
+        try { localStorage.setItem('pendingOrder', JSON.stringify({ order_id: result.order_id, timestamp: Date.now() })); } catch(_){}
         showToast(`✅ Заказ ${result.order_id} создан!`, 'success');
         showScreen('payment');
         startStatusCheck();
@@ -1362,7 +1347,6 @@
 
   // ===== ИНИЦИАЛИЗАЦИЯ =====
   if (!user?.id) {
-    // Не в Telegram — показываем заглушку
     document.getElementById('app').innerHTML = `
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;text-align:center;">
         <div style="font-size:64px;margin-bottom:16px;">📱</div>
@@ -1374,10 +1358,9 @@
       </div>`;
   } else {
     initProfile();
-    updateSliderUI(78);   // начальное значение ползунка
+    updateSliderUI(78);
     showScreen('main');
 
-    // Восстановить ожидающий заказ
     try {
       const saved = JSON.parse(localStorage.getItem('pendingOrder'));
       if (saved?.order_id) { hasPendingOrder=true; pendingOrderId=saved.order_id; startStatusCheck(); }
