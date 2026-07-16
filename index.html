@@ -5,21 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>OrangMods — Mini App</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script>
-    // Очищаем старые заказы при загрузке
-    try {
-      const saved = localStorage.getItem('pendingOrder');
-      if (saved) {
-        const data = JSON.parse(saved);
-        // Если заказу больше 5 минут - удаляем
-        if (data && data.timestamp && (Date.now() - data.timestamp > 300000)) {
-          localStorage.removeItem('pendingOrder');
-        }
-      }
-    } catch(e) {
-      localStorage.removeItem('pendingOrder');
-    }
-  </script>
   <style>
     * {
       margin: 0; padding: 0;
@@ -61,11 +46,7 @@
     }
 
     .screen.hidden { display: none !important; }
-
-    .screen.active {
-      display: flex;
-      animation: fadeSlide 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
-    }
+    .screen.active { display: flex; animation: fadeSlide 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards; }
 
     @keyframes fadeSlide {
       0%   { opacity: 0; transform: translateY(18px) scale(0.97); }
@@ -553,7 +534,7 @@
     <div class="subhead">Выберите действие</div>
 
     <div class="dash-grid">
-      <div class="dash-card" data-screen="purchase">
+      <div class="dash-card" data-screen="purchase" id="purchaseCard">
         <span class="icon">🛒</span>
         <div class="info">
           <div class="title">Купить ключ</div>
@@ -830,19 +811,6 @@
 (function () {
   'use strict';
 
-  // ===== ОЧИСТКА СТАРЫХ ЗАКАЗОВ =====
-  try {
-    const saved = localStorage.getItem('pendingOrder');
-    if (saved) {
-      const data = JSON.parse(saved);
-      if (data && data.timestamp && (Date.now() - data.timestamp > 300000)) {
-        localStorage.removeItem('pendingOrder');
-      }
-    }
-  } catch(e) {
-    localStorage.removeItem('pendingOrder');
-  }
-
   // ===== КОНФИГ =====
   const ADMIN_IDS   = [7558811554, 7597506876];
   const API_BASE    = 'https://orangmods.onrender.com/api/webapp';
@@ -919,9 +887,7 @@
     card.addEventListener('click', () => {
       const t = card.dataset.screen;
       if (t === 'purchase') {
-        if (hasPendingOrder) { showToast('⚠️ Уже есть ожидающий заказ!', 'error'); return; }
-        updateConfig();
-        showScreen('purchase');
+        checkPendingOrderBeforePurchase();
       } else if (t === 'keys') {
         loadUserKeys(); showScreen('keys');
       } else {
@@ -985,6 +951,44 @@
     if (!ct?.includes('application/json')) throw new Error('API вернул не JSON');
     if (!r.ok) { const e = await r.json(); throw new Error(e.detail || 'API error'); }
     return r.json();
+  }
+
+  // ===== ПРОВЕРКА ОЖИДАЮЩЕГО ЗАКАЗА ЧЕРЕЗ API =====
+  async function checkPendingOrder(userId) {
+    try {
+      const result = await apiPublic('GET', `/orders/${userId}`);
+      if (result && result.orders) {
+        const pending = result.orders.find(o => o.status === 'pending');
+        if (pending) {
+          hasPendingOrder = true;
+          pendingOrderId = pending.order_id;
+          return pending;
+        }
+      }
+    } catch (e) {
+      console.log('Check pending order error:', e);
+    }
+    hasPendingOrder = false;
+    pendingOrderId = null;
+    return null;
+  }
+
+  async function checkPendingOrderBeforePurchase() {
+    if (!currentUser) {
+      showToast('❌ Ошибка: пользователь не авторизован', 'error');
+      return;
+    }
+    
+    showToast('⏳ Проверка...', 'info');
+    const pending = await checkPendingOrder(currentUser.id);
+    
+    if (pending) {
+      showToast(`⚠️ У вас уже есть ожидающий заказ ${pending.order_id}!`, 'error');
+      return;
+    }
+    
+    updateConfig();
+    showScreen('purchase');
   }
 
   // ===== СЛАЙДЕР =====
@@ -1107,7 +1111,6 @@
         hasPendingOrder = true;
         pendingOrderId  = result.order_id;
         setText('waitingOrderId', result.order_id);
-        try { localStorage.setItem('pendingOrder', JSON.stringify({ order_id: result.order_id, timestamp: Date.now() })); } catch(_){}
         showToast(`✅ Заказ ${result.order_id} создан!`, 'success');
         showScreen('payment');
         startStatusCheck();
@@ -1130,13 +1133,12 @@
     statusCheckInterval = setInterval(async () => {
       if (!pendingOrderId) { clearInterval(statusCheckInterval); return; }
       try {
-        const r = await apiPublic('GET', '/orders/status/' + encodeURIComponent(pendingOrderId));
-        if (r && r.status !== 'pending') {
+        const result = await apiPublic('GET', `/orders/status/${encodeURIComponent(pendingOrderId)}`);
+        if (result && result.status !== 'pending') {
           hasPendingOrder = false; pendingOrderId = null;
           clearInterval(statusCheckInterval);
-          try { localStorage.removeItem('pendingOrder'); } catch(_){}
-          if (r.status === 'approved') { showToast('✅ Заказ одобрен! Ключ в разделе "Мои ключи".', 'success'); loadUserKeys(); }
-          else if (r.status === 'rejected') { showToast('❌ Заказ отклонён. Попробуйте снова.', 'error'); }
+          if (result.status === 'approved') { showToast('✅ Заказ одобрен! Ключ в разделе "Мои ключи".', 'success'); loadUserKeys(); }
+          else if (result.status === 'rejected') { showToast('❌ Заказ отклонён. Попробуйте снова.', 'error'); }
         }
       } catch(_){}
     }, 5000);
@@ -1361,10 +1363,15 @@
     updateSliderUI(78);
     showScreen('main');
 
-    try {
-      const saved = JSON.parse(localStorage.getItem('pendingOrder'));
-      if (saved?.order_id) { hasPendingOrder=true; pendingOrderId=saved.order_id; startStatusCheck(); }
-    } catch(_) { localStorage.removeItem('pendingOrder'); }
+    // Проверяем ожидающие заказы при загрузке
+    setTimeout(async () => {
+      if (currentUser) {
+        await checkPendingOrder(currentUser.id);
+        if (hasPendingOrder) {
+          showToast(`⚠️ У вас есть ожидающий заказ ${pendingOrderId}`, 'info');
+        }
+      }
+    }, 1000);
   }
 
 })();
