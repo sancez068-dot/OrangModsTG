@@ -116,6 +116,12 @@
       box-shadow: 0 4px 16px rgba(255, 140, 0, 0.25);
     }
 
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
     .btn-outline {
       background: transparent;
       border: 1.5px solid #FF8C00;
@@ -881,6 +887,68 @@
       flex: 1;
     }
 
+    /* Дополнительные поля для кнопок скачивания */
+    .download-options {
+      margin-top: 12px;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.05);
+      display: none;
+    }
+
+    .download-options.visible {
+      display: block;
+    }
+
+    .download-options .field {
+      margin-bottom: 8px;
+    }
+
+    .download-options .field label {
+      display: block;
+      color: #a69b8f;
+      font-size: 11px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .download-options .field input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid #333;
+      background: rgba(0,0,0,0.3);
+      color: #f0ece6;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .download-options .field input:focus {
+      border-color: #FF8C00;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      padding: 6px 0;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #FF8C00;
+      cursor: pointer;
+    }
+
+    .checkbox-row label {
+      color: #d6cec4;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
     .toast-container {
       position: fixed;
       top: 20px;
@@ -952,7 +1020,7 @@
     </div>
 
     <div class="dash-grid">
-      <div class="dash-card" data-screen="purchase">
+      <div class="dash-card" data-screen="purchase" id="purchaseCard">
         <span class="icon">🛒</span>
         <div class="info">
           <div class="title">Купить ключ</div>
@@ -1001,19 +1069,19 @@
     <div style="margin: 6px 0 4px;">
       <div style="font-weight:600; color:#d6cec4; font-size:15px; margin-bottom:8px;">🔓 Функционал</div>
       <div class="func-grid" id="funcGrid">
-        <div class="func-card" data-value="40" data-price="40" data-label="40–50%">
+        <div class="func-card" data-value="50" data-price="40" data-label="40–50%">
           <div class="f-percent">40–50%</div>
           <div class="f-price">40⭐</div>
         </div>
-        <div class="func-card" data-value="80" data-price="80" data-label="60–70%">
+        <div class="func-card" data-value="70" data-price="80" data-label="60–70%">
           <div class="f-percent">60–70%</div>
           <div class="f-price">80⭐</div>
         </div>
-        <div class="func-card" data-value="100" data-price="100" data-label="70–80%">
+        <div class="func-card" data-value="80" data-price="100" data-label="70–80%">
           <div class="f-percent">70–80%</div>
           <div class="f-price">100⭐</div>
         </div>
-        <div class="func-card selected" data-value="125" data-price="125" data-label="80–95%">
+        <div class="func-card selected" data-value="95" data-price="125" data-label="80–95%">
           <div class="f-percent">80–95%</div>
           <div class="f-price">125⭐</div>
         </div>
@@ -1066,53 +1134,22 @@
     <div id="purchaseMsg" class="text-muted text-center mt-10" style="color:#FF8C00; font-size:14px;"></div>
   </div>
 
-  <!-- ===== ОПЛАТА ===== -->
+  <!-- ===== ОПЛАТА (ОЖИДАНИЕ ОДОБРЕНИЯ) ===== -->
   <div id="screen-payment" class="screen hidden">
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:4px;">
       <span style="font-size:28px; cursor:pointer;" id="backFromPayment">←</span>
-      <h2 style="margin-bottom:0;">💳 Заказ создан</h2>
+      <h2 style="margin-bottom:0;">⏳ Ожидание одобрения</h2>
     </div>
 
-    <div class="payment-card">
-      <div class="payment-row">
-        <span class="label">Номер заказа</span>
-        <span class="value id" id="orderIdDisplay">#OM-428512</span>
-      </div>
-      <div class="payment-row">
-        <span class="label">Стоимость</span>
-        <span class="value price" id="orderPriceDisplay">725⭐</span>
-      </div>
-      <div class="payment-row">
-        <span class="label">Статус</span>
-        <span class="value status" id="orderStatusDisplay">⏳ Ожидает оплаты</span>
-      </div>
-    </div>
-
-    <button class="btn-sm" id="copyOrderIdBtn" style="align-self:flex-start; margin-bottom:10px;">📋 Скопировать ID</button>
-
-    <div class="instruction">
-      <strong>Инструкция по оплате</strong><br><br>
-      Отправьте подарки Telegram пользователю <strong>Moirouk</strong><br>
-      на сумму <strong id="instructionAmount">725⭐</strong><br><br>
-      После отправки подарков отправьте сообщение с ID заказа:<br>
-      <span style="font-family:monospace; color:#FFA347; background:rgba(0,0,0,0.3); padding:2px 14px; border-radius:20px; display:inline-block; margin-top:4px;" id="instructionOrderId">#OM-428512</span>
-    </div>
-
-    <button class="btn" id="paidBtn">✅ Я оплатил</button>
-    <div id="paymentMsg" class="text-muted text-center mt-10" style="color:#FF8C00;"></div>
-  </div>
-
-  <!-- ===== ОЖИДАНИЕ ===== -->
-  <div id="screen-waiting" class="screen hidden">
     <div style="text-align:center; padding: 20px 0; flex:1; display:flex; flex-direction:column; justify-content:center;">
       <div class="loader"></div>
       <h2 style="margin-top: 10px;">⏳ Ожидание</h2>
-      <div class="subhead" style="border-left:none; text-align:center;">Ожидаем подтверждение администратора...</div>
+      <div class="subhead" style="border-left:none; text-align:center;">Ваш заказ отправлен на проверку администратору...</div>
       <div style="margin-top: 24px; background:rgba(0,0,0,0.2); padding:14px 18px; border-radius:30px; border:1px solid rgba(255,255,255,0.04);">
         <span style="color:#a69b8f;">ID заказа: <strong id="waitingOrderId" style="color:#FFA347;">#OM-000000</strong></span>
       </div>
       <div class="text-muted mt-16" style="font-size:13px;">Статус заказа обновится после проверки администратором</div>
-      <button class="btn btn-outline" id="backFromWaiting" style="margin-top: 28px;">На главную</button>
+      <button class="btn btn-outline" id="backFromPaymentBtn" style="margin-top: 28px;">На главную</button>
     </div>
   </div>
 
@@ -1203,7 +1240,7 @@
     <button class="btn btn-outline" id="backFromAdminBtn" style="margin-top:12px;">На главную</button>
   </div>
 
-  <!-- ===== МОДАЛЬНОЕ ОКНО ===== -->
+  <!-- ===== МОДАЛЬНОЕ ОКНО (детали заказа с галочкой) ===== -->
   <div class="modal-overlay" id="orderModal">
     <div class="modal">
       <h3 id="modalOrderId">#OM-123456</h3>
@@ -1232,6 +1269,24 @@
       <div class="info-row" id="modalKeyRow" style="display:none;">
         <span class="label">Ключ</span>
         <span class="value" id="modalKey" style="font-family:monospace;color:#FFA347;font-size:12px;">OrangMods-7DAY-XXXXXX</span>
+      </div>
+
+      <!-- Чекбокс для кнопки скачивания -->
+      <div class="checkbox-row" style="margin-top:12px;">
+        <input type="checkbox" id="modalDownloadBtn">
+        <label for="modalDownloadBtn">🔘 Кнопка скачивания</label>
+      </div>
+
+      <!-- Дополнительные поля для кнопок -->
+      <div class="download-options" id="downloadOptions">
+        <div class="field">
+          <label>Текст кнопки "Скачать"</label>
+          <input type="text" id="modalDownloadText" value="Скачать" placeholder="Например: Скачать">
+        </div>
+        <div class="field">
+          <label>Текст кнопки "Скачано"</label>
+          <input type="text" id="modalInstalledText" value="Скачано" placeholder="Например: Установлено">
+        </div>
       </div>
 
       <div class="actions" id="modalActions">
@@ -1264,6 +1319,10 @@
     const ADMIN_LOGIN = 'Ad09oLq@Gmail.yandex';
     const ADMIN_PASSWORD = 'pa9w9diqllOoeje';
     let adminToken = null;
+
+    // ===== БЛОКИРОВКА СОЗДАНИЯ ЗАКАЗА =====
+    let hasPendingOrder = false;
+    let pendingOrderId = null;
 
     // ===== ЭЛЕМЕНТЫ =====
     const screens = {
@@ -1329,6 +1388,11 @@
       card.addEventListener('click', () => {
         const target = card.dataset.screen;
         if (target === 'purchase') {
+          // Проверяем блокировку
+          if (hasPendingOrder) {
+            showToast('⚠️ У вас уже есть ожидающий заказ! Дождитесь его обработки.', 'error');
+            return;
+          }
           updateConfig();
           showScreen('purchase');
         } else if (target === 'keys') {
@@ -1350,8 +1414,8 @@
 
     // ===== КНОПКИ "НАЗАД" =====
     document.getElementById('backFromPurchase').addEventListener('click', () => showScreen('main'));
-    document.getElementById('backFromPayment').addEventListener('click', () => showScreen('purchase'));
-    document.getElementById('backFromWaiting').addEventListener('click', () => showScreen('main'));
+    document.getElementById('backFromPayment').addEventListener('click', () => showScreen('main'));
+    document.getElementById('backFromPaymentBtn').addEventListener('click', () => showScreen('main'));
     document.getElementById('backFromKeys').addEventListener('click', () => showScreen('main'));
     document.getElementById('backFromKeysBtn').addEventListener('click', () => showScreen('main'));
     document.getElementById('backFromPrices').addEventListener('click', () => showScreen('main'));
@@ -1500,9 +1564,10 @@
       }
     }
 
-    // Создание заказа (публичный)
+    // Создание заказа (публичный) - теперь с блокировкой
     async function createOrder(orderData) {
-      return await apiRequestPublic('POST', '/orders', orderData);
+      const result = await apiRequestPublic('POST', '/orders', orderData);
+      return result;
     }
 
     // Получение ключей пользователя (публичный)
@@ -1521,9 +1586,14 @@
       return result;
     }
 
-    // Одобрение заказа (админ)
-    async function approveOrder(orderId, key) {
-      return await apiRequestAuth('POST', `/orders/${encodeURIComponent(orderId)}/approve`, { key: key || null });
+    // Одобрение заказа (админ) с параметрами кнопок
+    async function approveOrder(orderId, key, downloadButton, downloadText, installedText) {
+      return await apiRequestAuth('POST', `/orders/${encodeURIComponent(orderId)}/approve`, { 
+        key: key || null,
+        download_button: downloadButton,
+        download_button_text: downloadText || 'Скачать',
+        installed_button_text: installedText || 'Скачано'
+      });
     }
 
     // Отклонение заказа (админ)
@@ -1531,9 +1601,19 @@
       return await apiRequestAuth('POST', `/orders/${encodeURIComponent(orderId)}/reject`);
     }
 
+    // Получение статуса заказа (публичный) - для проверки блокировки
+    async function getOrderStatus(orderId) {
+      try {
+        return await apiRequestPublic('GET', `/orders/status/${encodeURIComponent(orderId)}`);
+      } catch (error) {
+        console.error('Get order status error:', error);
+        return null;
+      }
+    }
+
     // ===== КОНФИГУРАТОР =====
     const funcCards = document.querySelectorAll('.func-card');
-    let selectedFunc = { value: 125, price: 125, label: '80–95%' };
+    let selectedFunc = { value: 95, price: 125, label: '80–95%' };
 
     funcCards.forEach(card => {
       card.addEventListener('click', function() {
@@ -1602,13 +1682,18 @@
       };
     }
 
-    // ===== ПОКУПКА =====
+    // ===== ПОКУПКА (с блокировкой) =====
     document.getElementById('buyBtn').addEventListener('click', async function() {
       const order = window._currentOrder;
       if (!order) return;
 
       if (!currentUser) {
         showToast('❌ Ошибка: пользователь не авторизован', 'error');
+        return;
+      }
+
+      if (hasPendingOrder) {
+        showToast('⚠️ У вас уже есть ожидающий заказ! Дождитесь его обработки.', 'error');
         return;
       }
 
@@ -1630,16 +1715,15 @@
         const result = await createOrder(orderData);
 
         if (result.success) {
-          document.getElementById('orderIdDisplay').textContent = result.order_id;
-          document.getElementById('orderPriceDisplay').textContent = order.total + '⭐';
-          document.getElementById('instructionAmount').textContent = order.total + '⭐';
-          document.getElementById('instructionOrderId').textContent = result.order_id;
-          document.getElementById('orderStatusDisplay').textContent = '⏳ Ожидает оплаты';
+          hasPendingOrder = true;
+          pendingOrderId = result.order_id;
 
-          window._pendingOrder = { ...order, id: result.order_id };
-
-          showToast(`✅ Заказ ${result.order_id} создан!`, 'success');
+          document.getElementById('waitingOrderId').textContent = result.order_id;
+          showToast(`✅ Заказ ${result.order_id} создан! Ожидайте подтверждения.`, 'success');
           showScreen('payment');
+
+          // Запускаем проверку статуса
+          checkOrderStatus();
         } else {
           showToast('❌ Ошибка создания заказа', 'error');
         }
@@ -1653,28 +1737,56 @@
       this.textContent = '⭐ Купить за ' + order.total + '⭐';
     });
 
+    // ===== ПРОВЕРКА СТАТУСА ЗАКАЗА (для снятия блокировки) =====
+    let statusCheckInterval = null;
+
+    function checkOrderStatus() {
+      if (statusCheckInterval) {
+        clearInterval(statusCheckInterval);
+      }
+
+      statusCheckInterval = setInterval(async () => {
+        if (!pendingOrderId) {
+          clearInterval(statusCheckInterval);
+          return;
+        }
+
+        try {
+          const result = await getOrderStatus(pendingOrderId);
+          if (result && result.status !== 'pending') {
+            // Заказ обработан - снимаем блокировку
+            hasPendingOrder = false;
+            pendingOrderId = null;
+            clearInterval(statusCheckInterval);
+            
+            if (result.status === 'approved') {
+              showToast('✅ Ваш заказ одобрен! Ключ доступен в разделе "Мои ключи".', 'success');
+              // Обновляем ключи
+              loadUserKeys();
+            } else if (result.status === 'rejected') {
+              showToast('❌ Ваш заказ отклонён. Попробуйте создать новый.', 'error');
+            }
+          }
+        } catch (error) {
+          console.error('Check status error:', error);
+        }
+      }, 5000); // Проверяем каждые 5 секунд
+    }
+
     // ===== КОПИРОВАТЬ ID =====
-    document.getElementById('copyOrderIdBtn').addEventListener('click', function() {
-      const id = document.getElementById('orderIdDisplay').textContent;
-      if (navigator.clipboard) {
+    document.getElementById('copyOrderIdBtn')?.addEventListener('click', function() {
+      const id = document.getElementById('orderIdDisplay')?.textContent;
+      if (id && navigator.clipboard) {
         navigator.clipboard.writeText(id).then(() => {
           this.textContent = '✅ Скопировано!';
           setTimeout(() => { this.textContent = '📋 Скопировать ID'; }, 2000);
         });
-      } else {
+      } else if (id) {
         alert('ID: ' + id);
       }
     });
 
-    // ===== Я ОПЛАТИЛ =====
-    document.getElementById('paidBtn').addEventListener('click', function() {
-      const order = window._pendingOrder || { id: '#OM-000000' };
-      document.getElementById('waitingOrderId').textContent = order.id;
-      showToast('✅ Ждём подтверждения администратора', 'info');
-      showScreen('waiting');
-    });
-
-    // ===== МОИ КЛЮЧИ =====
+    // ===== МОИ КЛЮЧИ (с обновлением статуса) =====
     async function loadUserKeys() {
       const container = document.getElementById('keysContainer');
       const noMsg = document.getElementById('noKeysMsg');
@@ -1691,8 +1803,10 @@
 
         noMsg.style.display = 'none';
         container.innerHTML = keys.map((k, idx) => {
-          const statusText = k.status === 'active' ? '🟢 Активен' : '⚪ Не активирован';
-          const statusClass = k.status === 'active' ? 'status-active' : 'status-inactive';
+          // Определяем статус: активен или нет
+          const isActive = k.status === 'active' || (k.expiry_date && new Date(k.expiry_date) > new Date());
+          const statusText = isActive ? '🟢 Активен' : '⚪ Не активирован';
+          const statusClass = isActive ? 'status-active' : 'status-inactive';
 
           return `
             <div class="key-item" data-idx="${idx}">
@@ -1768,6 +1882,20 @@
     const adminSearchInput = document.getElementById('adminSearchInput');
     const adminSearchCount = document.getElementById('adminSearchCount');
     const adminSearchQuery = document.getElementById('adminSearchQuery');
+
+    // Чекбокс для кнопки скачивания в модалке
+    const modalDownloadBtn = document.getElementById('modalDownloadBtn');
+    const downloadOptions = document.getElementById('downloadOptions');
+    const modalDownloadText = document.getElementById('modalDownloadText');
+    const modalInstalledText = document.getElementById('modalInstalledText');
+
+    modalDownloadBtn.addEventListener('change', function() {
+      if (this.checked) {
+        downloadOptions.classList.add('visible');
+      } else {
+        downloadOptions.classList.remove('visible');
+      }
+    });
 
     async function loadAdminOrders() {
       if (!isAdmin) {
@@ -1895,6 +2023,12 @@
         document.getElementById('modalKeyRow').style.display = 'none';
       }
 
+      // Сбрасываем галочку и поля
+      modalDownloadBtn.checked = false;
+      downloadOptions.classList.remove('visible');
+      modalDownloadText.value = 'Скачать';
+      modalInstalledText.value = 'Скачано';
+
       if (order.status === 'pending') {
         document.getElementById('modalActions').style.display = 'flex';
         document.getElementById('modalActionsDone').style.display = 'none';
@@ -1930,11 +2064,24 @@
           return;
         }
 
-        const result = await approveOrder(order.order_id, null);
+        const downloadButton = modalDownloadBtn.checked;
+        const downloadText = modalDownloadText.value.trim() || 'Скачать';
+        const installedText = modalInstalledText.value.trim() || 'Скачано';
+
+        const result = await approveOrder(order.order_id, null, downloadButton, downloadText, installedText);
 
         if (result.success) {
           order.status = 'approved';
           order.key = result.key;
+
+          // Снимаем блокировку с пользователя
+          if (order.user_id === currentUser?.id) {
+            hasPendingOrder = false;
+            pendingOrderId = null;
+            if (statusCheckInterval) {
+              clearInterval(statusCheckInterval);
+            }
+          }
 
           closeModal();
           renderAdminOrders();
@@ -1970,6 +2117,15 @@
 
         if (result.success) {
           order.status = 'rejected';
+
+          // Снимаем блокировку с пользователя
+          if (order.user_id === currentUser?.id) {
+            hasPendingOrder = false;
+            pendingOrderId = null;
+            if (statusCheckInterval) {
+              clearInterval(statusCheckInterval);
+            }
+          }
 
           closeModal();
           renderAdminOrders();
@@ -2030,6 +2186,34 @@
       initProfile();
       showScreen('main');
       updateConfig();
+
+      // Проверяем, есть ли ожидающий заказ
+      const savedOrder = localStorage.getItem('pendingOrder');
+      if (savedOrder) {
+        try {
+          const data = JSON.parse(savedOrder);
+          if (data && data.order_id) {
+            hasPendingOrder = true;
+            pendingOrderId = data.order_id;
+            checkOrderStatus();
+          }
+        } catch (e) {
+          localStorage.removeItem('pendingOrder');
+        }
+      }
+
+      // Сохраняем заказ в localStorage при создании
+      document.getElementById('buyBtn').addEventListener('click', function() {
+        // Сохраняем заказ после создания
+        setTimeout(() => {
+          if (pendingOrderId) {
+            localStorage.setItem('pendingOrder', JSON.stringify({ order_id: pendingOrderId }));
+          }
+        }, 1000);
+      });
+
+      // Снимаем блокировку при успешном одобрении/отклонении
+      // Это уже сделано в обработчиках approve/reject
 
       if (tg.ready) tg.ready();
 
