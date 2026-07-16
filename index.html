@@ -887,7 +887,27 @@
       flex: 1;
     }
 
-    /* Дополнительные поля для кнопок скачивания */
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      padding: 6px 0;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #FF8C00;
+      cursor: pointer;
+    }
+
+    .checkbox-row label {
+      color: #d6cec4;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
     .download-options {
       margin-top: 12px;
       padding: 12px 16px;
@@ -926,27 +946,6 @@
 
     .download-options .field input:focus {
       border-color: #FF8C00;
-    }
-
-    .checkbox-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      padding: 6px 0;
-    }
-
-    .checkbox-row input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: #FF8C00;
-      cursor: pointer;
-    }
-
-    .checkbox-row label {
-      color: #d6cec4;
-      font-size: 14px;
-      cursor: pointer;
     }
 
     .toast-container {
@@ -1134,11 +1133,11 @@
     <div id="purchaseMsg" class="text-muted text-center mt-10" style="color:#FF8C00; font-size:14px;"></div>
   </div>
 
-  <!-- ===== ОПЛАТА (ОЖИДАНИЕ ОДОБРЕНИЯ) ===== -->
+  <!-- ===== ОЖИДАНИЕ (для пользователя) ===== -->
   <div id="screen-payment" class="screen hidden">
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:4px;">
       <span style="font-size:28px; cursor:pointer;" id="backFromPayment">←</span>
-      <h2 style="margin-bottom:0;">⏳ Ожидание одобрения</h2>
+      <h2 style="margin-bottom:0;">⏳ Ожидание</h2>
     </div>
 
     <div style="text-align:center; padding: 20px 0; flex:1; display:flex; flex-direction:column; justify-content:center;">
@@ -1240,7 +1239,7 @@
     <button class="btn btn-outline" id="backFromAdminBtn" style="margin-top:12px;">На главную</button>
   </div>
 
-  <!-- ===== МОДАЛЬНОЕ ОКНО (детали заказа с галочкой) ===== -->
+  <!-- ===== МОДАЛЬНОЕ ОКНО ===== -->
   <div class="modal-overlay" id="orderModal">
     <div class="modal">
       <h3 id="modalOrderId">#OM-123456</h3>
@@ -1271,13 +1270,11 @@
         <span class="value" id="modalKey" style="font-family:monospace;color:#FFA347;font-size:12px;">OrangMods-7DAY-XXXXXX</span>
       </div>
 
-      <!-- Чекбокс для кнопки скачивания -->
       <div class="checkbox-row" style="margin-top:12px;">
         <input type="checkbox" id="modalDownloadBtn">
         <label for="modalDownloadBtn">🔘 Кнопка скачивания</label>
       </div>
 
-      <!-- Дополнительные поля для кнопок -->
       <div class="download-options" id="downloadOptions">
         <div class="field">
           <label>Текст кнопки "Скачать"</label>
@@ -1320,16 +1317,16 @@
     const ADMIN_PASSWORD = 'pa9w9diqllOoeje';
     let adminToken = null;
 
-    // ===== БЛОКИРОВКА СОЗДАНИЯ ЗАКАЗА =====
+    // ===== БЛОКИРОВКА =====
     let hasPendingOrder = false;
     let pendingOrderId = null;
+    let statusCheckInterval = null;
 
     // ===== ЭЛЕМЕНТЫ =====
     const screens = {
       main: document.getElementById('screen-main'),
       purchase: document.getElementById('screen-purchase'),
       payment: document.getElementById('screen-payment'),
-      waiting: document.getElementById('screen-waiting'),
       keys: document.getElementById('screen-keys'),
       prices: document.getElementById('screen-prices'),
       admin: document.getElementById('screen-admin'),
@@ -1338,12 +1335,14 @@
     function showScreen(name) {
       Object.keys(screens).forEach(key => {
         const el = screens[key];
-        if (key === name) {
-          el.classList.remove('hidden');
-          el.classList.add('active');
-        } else {
-          el.classList.add('hidden');
-          el.classList.remove('active');
+        if (el) {
+          if (key === name) {
+            el.classList.remove('hidden');
+            el.classList.add('active');
+          } else {
+            el.classList.add('hidden');
+            el.classList.remove('active');
+          }
         }
       });
     }
@@ -1363,32 +1362,32 @@
         const lastName = user.last_name || '';
         const fullName = (firstName + ' ' + lastName).trim() || 'Пользователь';
         const username = user.username ? '@' + user.username : '@username';
-        nameEl.textContent = fullName;
-        usernameEl.textContent = username;
-        avatarEl.textContent = (firstName[0] || '🍊').toUpperCase();
+        if (nameEl) nameEl.textContent = fullName;
+        if (usernameEl) usernameEl.textContent = username;
+        if (avatarEl) avatarEl.textContent = (firstName[0] || '🍊').toUpperCase();
         currentUser = user;
 
         isAdmin = ADMIN_IDS.includes(Number(user.id));
         if (isAdmin) {
-          document.getElementById('adminPanelContainer').classList.remove('hidden');
-          usernameEl.textContent += ' ⚙️';
+          const container = document.getElementById('adminPanelContainer');
+          if (container) container.classList.remove('hidden');
+          if (usernameEl) usernameEl.textContent += ' ⚙️';
         }
       } else {
-        nameEl.textContent = 'Загрузка...';
-        usernameEl.textContent = '@loading';
-        avatarEl.textContent = '🍊';
+        if (nameEl) nameEl.textContent = 'Загрузка...';
+        if (usernameEl) usernameEl.textContent = '@loading';
+        if (avatarEl) avatarEl.textContent = '🍊';
       }
     }
 
     let userStars = 0;
-    starsEl.textContent = '⭐ ' + userStars;
+    if (starsEl) starsEl.textContent = '⭐ ' + userStars;
 
     // ===== НАВИГАЦИЯ =====
     document.querySelectorAll('.dash-card[data-screen]').forEach(card => {
       card.addEventListener('click', () => {
         const target = card.dataset.screen;
         if (target === 'purchase') {
-          // Проверяем блокировку
           if (hasPendingOrder) {
             showToast('⚠️ У вас уже есть ожидающий заказ! Дождитесь его обработки.', 'error');
             return;
@@ -1399,6 +1398,10 @@
           loadUserKeys();
           showScreen('keys');
         } else if (target === 'admin') {
+          if (!isAdmin) {
+            showToast('❌ Доступ запрещён', 'error');
+            return;
+          }
           loadAdminOrders();
           showScreen('admin');
         } else {
@@ -1407,21 +1410,30 @@
       });
     });
 
-    document.getElementById('goAdminPanel').addEventListener('click', () => {
-      loadAdminOrders();
-      showScreen('admin');
-    });
+    const goAdmin = document.getElementById('goAdminPanel');
+    if (goAdmin) {
+      goAdmin.addEventListener('click', () => {
+        if (!isAdmin) {
+          showToast('❌ Доступ запрещён', 'error');
+          return;
+        }
+        loadAdminOrders();
+        showScreen('admin');
+      });
+    }
 
     // ===== КНОПКИ "НАЗАД" =====
-    document.getElementById('backFromPurchase').addEventListener('click', () => showScreen('main'));
-    document.getElementById('backFromPayment').addEventListener('click', () => showScreen('main'));
-    document.getElementById('backFromPaymentBtn').addEventListener('click', () => showScreen('main'));
-    document.getElementById('backFromKeys').addEventListener('click', () => showScreen('main'));
-    document.getElementById('backFromKeysBtn').addEventListener('click', () => showScreen('main'));
-    document.getElementById('backFromPrices').addEventListener('click', () => showScreen('main'));
-    document.getElementById('backFromPricesBtn').addEventListener('click', () => showScreen('main'));
-    document.getElementById('backFromAdmin').addEventListener('click', () => showScreen('main'));
-    document.getElementById('backFromAdminBtn').addEventListener('click', () => showScreen('main'));
+    const backButtons = [
+      'backFromPurchase', 'backFromPayment', 'backFromPaymentBtn',
+      'backFromKeys', 'backFromKeysBtn', 'backFromPrices', 'backFromPricesBtn',
+      'backFromAdmin', 'backFromAdminBtn'
+    ];
+    backButtons.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('click', () => showScreen('main'));
+      }
+    });
 
     // ===== TOAST =====
     function showToast(message, type = 'info') {
@@ -1480,17 +1492,15 @@
           return true;
         } else {
           console.error('❌ Ошибка входа:', data);
-          showToast('❌ Ошибка авторизации админа', 'error');
           return false;
         }
       } catch (error) {
         console.error('❌ Ошибка авторизации:', error);
-        showToast('❌ Ошибка авторизации: ' + error.message, 'error');
         return false;
       }
     }
 
-    // ===== API ФУНКЦИИ С АВТОРИЗАЦИЕЙ =====
+    // ===== API ФУНКЦИИ =====
 
     async function apiRequestAuth(method, endpoint, data = null) {
       if (!adminToken) {
@@ -1548,8 +1558,7 @@
         const contentType = response.headers.get('content-type');
 
         if (!contentType || !contentType.includes('application/json')) {
-          const text = await response.text();
-          throw new Error('API returned HTML instead of JSON: ' + text.substring(0, 100));
+          throw new Error('API returned HTML');
         }
 
         if (!response.ok) {
@@ -1564,13 +1573,10 @@
       }
     }
 
-    // Создание заказа (публичный) - теперь с блокировкой
     async function createOrder(orderData) {
-      const result = await apiRequestPublic('POST', '/orders', orderData);
-      return result;
+      return await apiRequestPublic('POST', '/orders', orderData);
     }
 
-    // Получение ключей пользователя (публичный)
     async function getUserKeys(userId) {
       try {
         return await apiRequestPublic('GET', `/keys/${userId}`);
@@ -1580,33 +1586,27 @@
       }
     }
 
-    // Получение заказов (админ)
     async function getAdminOrders() {
-      const result = await apiRequestAuth('GET', '/orders');
-      return result;
+      return await apiRequestAuth('GET', '/orders');
     }
 
-    // Одобрение заказа (админ) с параметрами кнопок
     async function approveOrder(orderId, key, downloadButton, downloadText, installedText) {
       return await apiRequestAuth('POST', `/orders/${encodeURIComponent(orderId)}/approve`, { 
         key: key || null,
-        download_button: downloadButton,
+        download_button: downloadButton || false,
         download_button_text: downloadText || 'Скачать',
         installed_button_text: installedText || 'Скачано'
       });
     }
 
-    // Отклонение заказа (админ)
     async function rejectOrder(orderId) {
       return await apiRequestAuth('POST', `/orders/${encodeURIComponent(orderId)}/reject`);
     }
 
-    // Получение статуса заказа (публичный) - для проверки блокировки
     async function getOrderStatus(orderId) {
       try {
         return await apiRequestPublic('GET', `/orders/status/${encodeURIComponent(orderId)}`);
       } catch (error) {
-        console.error('Get order status error:', error);
         return null;
       }
     }
@@ -1643,17 +1643,25 @@
       });
     });
 
-    document.getElementById('qtyPlus').addEventListener('click', () => {
-      qty = Math.min(qty + 1, 999);
-      document.getElementById('qtyDisplay').textContent = qty;
-      updateConfig();
-    });
+    const qtyPlus = document.getElementById('qtyPlus');
+    const qtyMinus = document.getElementById('qtyMinus');
+    const qtyDisplay = document.getElementById('qtyDisplay');
 
-    document.getElementById('qtyMinus').addEventListener('click', () => {
-      qty = Math.max(qty - 1, 1);
-      document.getElementById('qtyDisplay').textContent = qty;
-      updateConfig();
-    });
+    if (qtyPlus) {
+      qtyPlus.addEventListener('click', () => {
+        qty = Math.min(qty + 1, 999);
+        if (qtyDisplay) qtyDisplay.textContent = qty;
+        updateConfig();
+      });
+    }
+
+    if (qtyMinus) {
+      qtyMinus.addEventListener('click', () => {
+        qty = Math.max(qty - 1, 1);
+        if (qtyDisplay) qtyDisplay.textContent = qty;
+        updateConfig();
+      });
+    }
 
     const UNIT_PRICES = { hours: 15, days: 50, weeks: 200, months: 650 };
     const UNIT_LABELS = { hours: 'часов', days: 'дней', weeks: 'недель', months: 'месяцев' };
@@ -1664,12 +1672,19 @@
       const durationCost = unitPrice * qty;
       const total = funcPrice + durationCost;
 
-      document.getElementById('totalFuncLabel').textContent = selectedFunc.label;
-      document.getElementById('totalDurationLabel').textContent = qty + ' ' + UNIT_LABELS[selectedUnit];
-      document.getElementById('totalFuncPrice').textContent = funcPrice + '⭐';
-      document.getElementById('totalDurationPrice').textContent = durationCost + '⭐';
-      document.getElementById('totalFinalPrice').textContent = total + '⭐';
-      document.getElementById('buyBtnPrice').textContent = total;
+      const elFuncLabel = document.getElementById('totalFuncLabel');
+      const elDurationLabel = document.getElementById('totalDurationLabel');
+      const elFuncPrice = document.getElementById('totalFuncPrice');
+      const elDurationPrice = document.getElementById('totalDurationPrice');
+      const elFinalPrice = document.getElementById('totalFinalPrice');
+      const elBuyPrice = document.getElementById('buyBtnPrice');
+
+      if (elFuncLabel) elFuncLabel.textContent = selectedFunc.label;
+      if (elDurationLabel) elDurationLabel.textContent = qty + ' ' + UNIT_LABELS[selectedUnit];
+      if (elFuncPrice) elFuncPrice.textContent = funcPrice + '⭐';
+      if (elDurationPrice) elDurationPrice.textContent = durationCost + '⭐';
+      if (elFinalPrice) elFinalPrice.textContent = total + '⭐';
+      if (elBuyPrice) elBuyPrice.textContent = total;
 
       window._currentOrder = {
         func: selectedFunc,
@@ -1682,64 +1697,68 @@
       };
     }
 
-    // ===== ПОКУПКА (с блокировкой) =====
-    document.getElementById('buyBtn').addEventListener('click', async function() {
-      const order = window._currentOrder;
-      if (!order) return;
+    // ===== ПОКУПКА =====
+    const buyBtn = document.getElementById('buyBtn');
+    if (buyBtn) {
+      buyBtn.addEventListener('click', async function() {
+        const order = window._currentOrder;
+        if (!order) return;
 
-      if (!currentUser) {
-        showToast('❌ Ошибка: пользователь не авторизован', 'error');
-        return;
-      }
-
-      if (hasPendingOrder) {
-        showToast('⚠️ У вас уже есть ожидающий заказ! Дождитесь его обработки.', 'error');
-        return;
-      }
-
-      this.disabled = true;
-      this.textContent = '⏳ Обработка...';
-
-      try {
-        const orderData = {
-          user_id: currentUser.id,
-          username: currentUser.username || 'user',
-          first_name: currentUser.first_name || 'Пользователь',
-          func_level: order.func.label,
-          func_price: order.func.price,
-          duration: order.durationText,
-          duration_price: order.durationCost,
-          total_price: order.total
-        };
-
-        const result = await createOrder(orderData);
-
-        if (result.success) {
-          hasPendingOrder = true;
-          pendingOrderId = result.order_id;
-
-          document.getElementById('waitingOrderId').textContent = result.order_id;
-          showToast(`✅ Заказ ${result.order_id} создан! Ожидайте подтверждения.`, 'success');
-          showScreen('payment');
-
-          // Запускаем проверку статуса
-          checkOrderStatus();
-        } else {
-          showToast('❌ Ошибка создания заказа', 'error');
+        if (!currentUser) {
+          showToast('❌ Ошибка: пользователь не авторизован', 'error');
+          return;
         }
-      } catch (error) {
-        showToast('❌ ' + error.message, 'error');
-        document.getElementById('purchaseMsg').textContent = '❌ ' + error.message;
-        document.getElementById('purchaseMsg').style.color = '#ff6b6b';
-      }
 
-      this.disabled = false;
-      this.textContent = '⭐ Купить за ' + order.total + '⭐';
-    });
+        if (hasPendingOrder) {
+          showToast('⚠️ У вас уже есть ожидающий заказ! Дождитесь его обработки.', 'error');
+          return;
+        }
 
-    // ===== ПРОВЕРКА СТАТУСА ЗАКАЗА (для снятия блокировки) =====
-    let statusCheckInterval = null;
+        this.disabled = true;
+        this.textContent = '⏳ Обработка...';
 
+        try {
+          const orderData = {
+            user_id: currentUser.id,
+            username: currentUser.username || 'user',
+            first_name: currentUser.first_name || 'Пользователь',
+            func_level: order.func.label,
+            func_price: order.func.price,
+            duration: order.durationText,
+            duration_price: order.durationCost,
+            total_price: order.total
+          };
+
+          const result = await createOrder(orderData);
+
+          if (result.success) {
+            hasPendingOrder = true;
+            pendingOrderId = result.order_id;
+
+            const waitingEl = document.getElementById('waitingOrderId');
+            if (waitingEl) waitingEl.textContent = result.order_id;
+
+            showToast(`✅ Заказ ${result.order_id} создан! Ожидайте подтверждения.`, 'success');
+            showScreen('payment');
+            checkOrderStatus();
+          } else {
+            showToast('❌ Ошибка создания заказа', 'error');
+          }
+        } catch (error) {
+          showToast('❌ ' + error.message, 'error');
+          const msgEl = document.getElementById('purchaseMsg');
+          if (msgEl) {
+            msgEl.textContent = '❌ ' + error.message;
+            msgEl.style.color = '#ff6b6b';
+          }
+        }
+
+        this.disabled = false;
+        this.textContent = '⭐ Купить за ' + order.total + '⭐';
+      });
+    }
+
+    // ===== ПРОВЕРКА СТАТУСА =====
     function checkOrderStatus() {
       if (statusCheckInterval) {
         clearInterval(statusCheckInterval);
@@ -1754,14 +1773,12 @@
         try {
           const result = await getOrderStatus(pendingOrderId);
           if (result && result.status !== 'pending') {
-            // Заказ обработан - снимаем блокировку
             hasPendingOrder = false;
             pendingOrderId = null;
             clearInterval(statusCheckInterval);
             
             if (result.status === 'approved') {
               showToast('✅ Ваш заказ одобрен! Ключ доступен в разделе "Мои ключи".', 'success');
-              // Обновляем ключи
               loadUserKeys();
             } else if (result.status === 'rejected') {
               showToast('❌ Ваш заказ отклонён. Попробуйте создать новый.', 'error');
@@ -1770,23 +1787,10 @@
         } catch (error) {
           console.error('Check status error:', error);
         }
-      }, 5000); // Проверяем каждые 5 секунд
+      }, 5000);
     }
 
-    // ===== КОПИРОВАТЬ ID =====
-    document.getElementById('copyOrderIdBtn')?.addEventListener('click', function() {
-      const id = document.getElementById('orderIdDisplay')?.textContent;
-      if (id && navigator.clipboard) {
-        navigator.clipboard.writeText(id).then(() => {
-          this.textContent = '✅ Скопировано!';
-          setTimeout(() => { this.textContent = '📋 Скопировать ID'; }, 2000);
-        });
-      } else if (id) {
-        alert('ID: ' + id);
-      }
-    });
-
-    // ===== МОИ КЛЮЧИ (с обновлением статуса) =====
+    // ===== МОИ КЛЮЧИ =====
     async function loadUserKeys() {
       const container = document.getElementById('keysContainer');
       const noMsg = document.getElementById('noKeysMsg');
@@ -1796,50 +1800,53 @@
         const keys = result.keys || [];
 
         if (!keys || keys.length === 0) {
-          container.innerHTML = '';
-          noMsg.style.display = 'block';
+          if (container) container.innerHTML = '';
+          if (noMsg) noMsg.style.display = 'block';
           return;
         }
 
-        noMsg.style.display = 'none';
-        container.innerHTML = keys.map((k, idx) => {
-          // Определяем статус: активен или нет
-          const isActive = k.status === 'active' || (k.expiry_date && new Date(k.expiry_date) > new Date());
-          const statusText = isActive ? '🟢 Активен' : '⚪ Не активирован';
-          const statusClass = isActive ? 'status-active' : 'status-inactive';
+        if (noMsg) noMsg.style.display = 'none';
+        if (container) {
+          container.innerHTML = keys.map((k, idx) => {
+            const isActive = k.status === 'active' || (k.expiry_date && new Date(k.expiry_date) > new Date());
+            const statusText = isActive ? '🟢 Активен' : '⚪ Не активирован';
+            const statusClass = isActive ? 'status-active' : 'status-inactive';
 
-          return `
-            <div class="key-item" data-idx="${idx}">
-              <div class="key-row">
-                <span class="key-name">${k.name || 'Ключ'}</span>
-                <span class="${statusClass}">${statusText}</span>
+            return `
+              <div class="key-item" data-idx="${idx}">
+                <div class="key-row">
+                  <span class="key-name">${k.name || 'Ключ'}</span>
+                  <span class="${statusClass}">${statusText}</span>
+                </div>
+                <div class="key-row">
+                  <span class="key-detail">${k.level || '80–95%'}</span>
+                  <span class="key-detail">${k.duration || '—'}</span>
+                </div>
+                <div class="key-row">
+                  <span class="key-detail">📅 ${k.purchase_date ? new Date(k.purchase_date).toLocaleDateString() : '—'}</span>
+                  <span class="key-detail">⏳ ${k.expiry_date ? new Date(k.expiry_date).toLocaleDateString() : '—'}</span>
+                </div>
+                <div class="key-row" style="margin-top:6px;">
+                  <span class="key-code" data-full="${k.key_value}" data-hidden="${k.key_value.slice(0, -10)}••••••••••">${k.key_value.slice(0, -10)}••••••••••</span>
+                </div>
+                <div class="key-actions">
+                  <button class="btn-sm" data-action="toggleKey" data-idx="${idx}">🔓 Показать</button>
+                  <button class="btn-sm" data-action="copyKey" data-code="${k.key_value}">📋 Копировать</button>
+                </div>
               </div>
-              <div class="key-row">
-                <span class="key-detail">${k.level || '80–95%'}</span>
-                <span class="key-detail">${k.duration || '—'}</span>
-              </div>
-              <div class="key-row">
-                <span class="key-detail">📅 ${k.purchase_date ? new Date(k.purchase_date).toLocaleDateString() : '—'}</span>
-                <span class="key-detail">⏳ ${k.expiry_date ? new Date(k.expiry_date).toLocaleDateString() : '—'}</span>
-              </div>
-              <div class="key-row" style="margin-top:6px;">
-                <span class="key-code" data-full="${k.key_value}" data-hidden="${k.key_value.slice(0, -10)}••••••••••">${k.key_value.slice(0, -10)}••••••••••</span>
-              </div>
-              <div class="key-actions">
-                <button class="btn-sm" data-action="toggleKey" data-idx="${idx}">🔓 Показать</button>
-                <button class="btn-sm" data-action="copyKey" data-code="${k.key_value}">📋 Копировать</button>
-              </div>
-            </div>
-          `;
-        }).join('');
+            `;
+          }).join('');
+        }
 
-        // Обработчики для ключей
-        container.querySelectorAll('[data-action="toggleKey"]').forEach(btn => {
+        // Обработчики
+        document.querySelectorAll('[data-action="toggleKey"]').forEach(btn => {
           btn.addEventListener('click', function(e) {
             e.stopPropagation();
             const idx = parseInt(this.dataset.idx, 10);
-            const item = container.querySelector(`.key-item[data-idx="${idx}"]`);
+            const item = document.querySelector(`.key-item[data-idx="${idx}"]`);
+            if (!item) return;
             const codeSpan = item.querySelector('.key-code');
+            if (!codeSpan) return;
             const full = codeSpan.dataset.full;
             const hidden = codeSpan.dataset.hidden;
             if (codeSpan.textContent === hidden) {
@@ -1852,7 +1859,7 @@
           });
         });
 
-        container.querySelectorAll('[data-action="copyKey"]').forEach(btn => {
+        document.querySelectorAll('[data-action="copyKey"]').forEach(btn => {
           btn.addEventListener('click', function(e) {
             e.stopPropagation();
             const code = this.dataset.code;
@@ -1883,19 +1890,22 @@
     const adminSearchCount = document.getElementById('adminSearchCount');
     const adminSearchQuery = document.getElementById('adminSearchQuery');
 
-    // Чекбокс для кнопки скачивания в модалке
     const modalDownloadBtn = document.getElementById('modalDownloadBtn');
     const downloadOptions = document.getElementById('downloadOptions');
     const modalDownloadText = document.getElementById('modalDownloadText');
     const modalInstalledText = document.getElementById('modalInstalledText');
 
-    modalDownloadBtn.addEventListener('change', function() {
-      if (this.checked) {
-        downloadOptions.classList.add('visible');
-      } else {
-        downloadOptions.classList.remove('visible');
-      }
-    });
+    if (modalDownloadBtn) {
+      modalDownloadBtn.addEventListener('change', function() {
+        if (downloadOptions) {
+          if (this.checked) {
+            downloadOptions.classList.add('visible');
+          } else {
+            downloadOptions.classList.remove('visible');
+          }
+        }
+      });
+    }
 
     async function loadAdminOrders() {
       if (!isAdmin) {
@@ -1937,8 +1947,10 @@
         return new Date(b.created_at) - new Date(a.created_at);
       });
 
-      adminSearchCount.textContent = filtered.length;
-      adminSearchQuery.textContent = adminSearch.trim() ? `🔍 "${adminSearch}"` : '';
+      if (adminSearchCount) adminSearchCount.textContent = filtered.length;
+      if (adminSearchQuery) adminSearchQuery.textContent = adminSearch.trim() ? `🔍 "${adminSearch}"` : '';
+
+      if (!adminOrdersList) return;
 
       if (filtered.length === 0) {
         adminOrdersList.innerHTML = `
@@ -1985,9 +1997,13 @@
       const pending = adminOrders.filter(o => o.status === 'pending').length;
       const approved = adminOrders.filter(o => o.status === 'approved').length;
 
-      document.getElementById('adminStatTotal').textContent = total;
-      document.getElementById('adminStatPending').textContent = pending;
-      document.getElementById('adminStatApproved').textContent = approved;
+      const totalEl = document.getElementById('adminStatTotal');
+      const pendingEl = document.getElementById('adminStatPending');
+      const approvedEl = document.getElementById('adminStatApproved');
+
+      if (totalEl) totalEl.textContent = total;
+      if (pendingEl) pendingEl.textContent = pending;
+      if (approvedEl) approvedEl.textContent = approved;
     }
 
     function getStatusText(status) {
@@ -2008,141 +2024,166 @@
 
       currentOrderId = id;
 
-      document.getElementById('modalOrderId').textContent = order.order_id;
-      document.getElementById('modalUserInfo').textContent = `Пользователь: ${order.first_name} @${order.username}`;
-      document.getElementById('modalUserId').textContent = order.user_id;
-      document.getElementById('modalFunc').textContent = order.func_level;
-      document.getElementById('modalDuration').textContent = order.duration;
-      document.getElementById('modalPrice').textContent = order.total_price + '⭐';
-      document.getElementById('modalStatus').textContent = getStatusText(order.status);
+      const modalOrderIdEl = document.getElementById('modalOrderId');
+      const modalUserInfoEl = document.getElementById('modalUserInfo');
+      const modalUserIdEl = document.getElementById('modalUserId');
+      const modalFuncEl = document.getElementById('modalFunc');
+      const modalDurationEl = document.getElementById('modalDuration');
+      const modalPriceEl = document.getElementById('modalPrice');
+      const modalStatusEl = document.getElementById('modalStatus');
+      const modalKeyRowEl = document.getElementById('modalKeyRow');
+      const modalKeyEl = document.getElementById('modalKey');
 
-      if (order.key) {
-        document.getElementById('modalKeyRow').style.display = 'flex';
-        document.getElementById('modalKey').textContent = order.key;
-      } else {
-        document.getElementById('modalKeyRow').style.display = 'none';
+      if (modalOrderIdEl) modalOrderIdEl.textContent = order.order_id;
+      if (modalUserInfoEl) modalUserInfoEl.textContent = `Пользователь: ${order.first_name} @${order.username}`;
+      if (modalUserIdEl) modalUserIdEl.textContent = order.user_id;
+      if (modalFuncEl) modalFuncEl.textContent = order.func_level;
+      if (modalDurationEl) modalDurationEl.textContent = order.duration;
+      if (modalPriceEl) modalPriceEl.textContent = order.total_price + '⭐';
+      if (modalStatusEl) modalStatusEl.textContent = getStatusText(order.status);
+
+      if (modalKeyRowEl && modalKeyEl) {
+        if (order.key) {
+          modalKeyRowEl.style.display = 'flex';
+          modalKeyEl.textContent = order.key;
+        } else {
+          modalKeyRowEl.style.display = 'none';
+        }
       }
 
-      // Сбрасываем галочку и поля
-      modalDownloadBtn.checked = false;
-      downloadOptions.classList.remove('visible');
-      modalDownloadText.value = 'Скачать';
-      modalInstalledText.value = 'Скачано';
+      if (modalDownloadBtn) modalDownloadBtn.checked = false;
+      if (downloadOptions) downloadOptions.classList.remove('visible');
+      if (modalDownloadText) modalDownloadText.value = 'Скачать';
+      if (modalInstalledText) modalInstalledText.value = 'Скачано';
+
+      const actions = document.getElementById('modalActions');
+      const actionsDone = document.getElementById('modalActionsDone');
 
       if (order.status === 'pending') {
-        document.getElementById('modalActions').style.display = 'flex';
-        document.getElementById('modalActionsDone').style.display = 'none';
+        if (actions) actions.style.display = 'flex';
+        if (actionsDone) actionsDone.style.display = 'none';
       } else {
-        document.getElementById('modalActions').style.display = 'none';
-        document.getElementById('modalActionsDone').style.display = 'flex';
+        if (actions) actions.style.display = 'none';
+        if (actionsDone) actionsDone.style.display = 'flex';
       }
 
-      document.getElementById('orderModal').classList.add('active');
+      const modal = document.getElementById('orderModal');
+      if (modal) modal.classList.add('active');
     }
 
     function closeModal() {
-      document.getElementById('orderModal').classList.remove('active');
+      const modal = document.getElementById('orderModal');
+      if (modal) modal.classList.remove('active');
       currentOrderId = null;
     }
 
-    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
-    document.getElementById('orderModal').addEventListener('click', function(e) {
-      if (e.target === this) closeModal();
-    });
+    const closeModalBtn = document.getElementById('closeModalBtn');
+    if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+
+    const modalOverlay = document.getElementById('orderModal');
+    if (modalOverlay) {
+      modalOverlay.addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+      });
+    }
 
     // ===== ОДОБРИТЬ/ОТКЛОНИТЬ =====
-    document.getElementById('approveBtn').addEventListener('click', async function() {
-      if (currentOrderId === null) return;
+    const approveBtn = document.getElementById('approveBtn');
+    if (approveBtn) {
+      approveBtn.addEventListener('click', async function() {
+        if (currentOrderId === null) return;
 
-      this.disabled = true;
-      this.textContent = '⏳...';
+        this.disabled = true;
+        this.textContent = '⏳...';
 
-      try {
-        const order = adminOrders.find(o => o.id === currentOrderId);
-        if (!order) {
-          showToast('❌ Заказ не найден', 'error');
-          return;
-        }
-
-        const downloadButton = modalDownloadBtn.checked;
-        const downloadText = modalDownloadText.value.trim() || 'Скачать';
-        const installedText = modalInstalledText.value.trim() || 'Скачано';
-
-        const result = await approveOrder(order.order_id, null, downloadButton, downloadText, installedText);
-
-        if (result.success) {
-          order.status = 'approved';
-          order.key = result.key;
-
-          // Снимаем блокировку с пользователя
-          if (order.user_id === currentUser?.id) {
-            hasPendingOrder = false;
-            pendingOrderId = null;
-            if (statusCheckInterval) {
-              clearInterval(statusCheckInterval);
-            }
+        try {
+          const order = adminOrders.find(o => o.id === currentOrderId);
+          if (!order) {
+            showToast('❌ Заказ не найден', 'error');
+            return;
           }
 
-          closeModal();
-          renderAdminOrders();
-          updateAdminStats();
-          showToast(`✅ Заказ ${order.order_id} одобрен, ключ: ${result.key}`, 'success');
-        } else {
-          showToast('❌ Ошибка: ' + (result.detail || 'Неизвестная ошибка'), 'error');
-        }
+          const downloadButton = modalDownloadBtn ? modalDownloadBtn.checked : false;
+          const downloadText = modalDownloadText ? modalDownloadText.value.trim() || 'Скачать' : 'Скачать';
+          const installedText = modalInstalledText ? modalInstalledText.value.trim() || 'Скачано' : 'Скачано';
 
-      } catch (error) {
-        console.error('Approve error:', error);
-        showToast('❌ ' + error.message, 'error');
-      }
+          const result = await approveOrder(order.order_id, null, downloadButton, downloadText, installedText);
 
-      this.disabled = false;
-      this.textContent = '✅ Одобрить';
-    });
+          if (result.success) {
+            order.status = 'approved';
+            order.key = result.key;
 
-    document.getElementById('rejectBtn').addEventListener('click', async function() {
-      if (currentOrderId === null) return;
-
-      this.disabled = true;
-      this.textContent = '⏳...';
-
-      try {
-        const order = adminOrders.find(o => o.id === currentOrderId);
-        if (!order) {
-          showToast('❌ Заказ не найден', 'error');
-          return;
-        }
-
-        const result = await rejectOrder(order.order_id);
-
-        if (result.success) {
-          order.status = 'rejected';
-
-          // Снимаем блокировку с пользователя
-          if (order.user_id === currentUser?.id) {
-            hasPendingOrder = false;
-            pendingOrderId = null;
-            if (statusCheckInterval) {
-              clearInterval(statusCheckInterval);
+            if (order.user_id === currentUser?.id) {
+              hasPendingOrder = false;
+              pendingOrderId = null;
+              if (statusCheckInterval) {
+                clearInterval(statusCheckInterval);
+              }
             }
+
+            closeModal();
+            renderAdminOrders();
+            updateAdminStats();
+            showToast(`✅ Заказ ${order.order_id} одобрен, ключ: ${result.key}`, 'success');
+          } else {
+            showToast('❌ Ошибка: ' + (result.detail || 'Неизвестная ошибка'), 'error');
           }
 
-          closeModal();
-          renderAdminOrders();
-          updateAdminStats();
-          showToast(`❌ Заказ ${order.order_id} отклонён`, 'error');
-        } else {
-          showToast('❌ Ошибка: ' + (result.detail || 'Неизвестная ошибка'), 'error');
+        } catch (error) {
+          console.error('Approve error:', error);
+          showToast('❌ ' + error.message, 'error');
         }
 
-      } catch (error) {
-        console.error('Reject error:', error);
-        showToast('❌ ' + error.message, 'error');
-      }
+        this.disabled = false;
+        this.textContent = '✅ Одобрить';
+      });
+    }
 
-      this.disabled = false;
-      this.textContent = '❌ Отклонить';
-    });
+    const rejectBtn = document.getElementById('rejectBtn');
+    if (rejectBtn) {
+      rejectBtn.addEventListener('click', async function() {
+        if (currentOrderId === null) return;
+
+        this.disabled = true;
+        this.textContent = '⏳...';
+
+        try {
+          const order = adminOrders.find(o => o.id === currentOrderId);
+          if (!order) {
+            showToast('❌ Заказ не найден', 'error');
+            return;
+          }
+
+          const result = await rejectOrder(order.order_id);
+
+          if (result.success) {
+            order.status = 'rejected';
+
+            if (order.user_id === currentUser?.id) {
+              hasPendingOrder = false;
+              pendingOrderId = null;
+              if (statusCheckInterval) {
+                clearInterval(statusCheckInterval);
+              }
+            }
+
+            closeModal();
+            renderAdminOrders();
+            updateAdminStats();
+            showToast(`❌ Заказ ${order.order_id} отклонён`, 'error');
+          } else {
+            showToast('❌ Ошибка: ' + (result.detail || 'Неизвестная ошибка'), 'error');
+          }
+
+        } catch (error) {
+          console.error('Reject error:', error);
+          showToast('❌ ' + error.message, 'error');
+        }
+
+        this.disabled = false;
+        this.textContent = '❌ Отклонить';
+      });
+    }
 
     // ===== ФИЛЬТРЫ =====
     document.querySelectorAll('#screen-admin .filter-tab').forEach(tab => {
@@ -2155,72 +2196,80 @@
     });
 
     // ===== ПОИСК =====
-    adminSearchInput.addEventListener('input', function() {
-      adminSearch = this.value;
-      renderAdminOrders();
-    });
+    if (adminSearchInput) {
+      adminSearchInput.addEventListener('input', function() {
+        adminSearch = this.value;
+        renderAdminOrders();
+      });
+    }
 
     // ===== ЭКСПОРТ =====
-    document.getElementById('adminExportCSV').addEventListener('click', function() {
-      showToast('📊 CSV экспортирован', 'success');
-    });
+    const exportCSV = document.getElementById('adminExportCSV');
+    if (exportCSV) {
+      exportCSV.addEventListener('click', function() {
+        showToast('📊 CSV экспортирован', 'success');
+      });
+    }
 
-    document.getElementById('adminExportJSON').addEventListener('click', function() {
-      showToast('📄 JSON экспортирован', 'success');
-    });
+    const exportJSON = document.getElementById('adminExportJSON');
+    if (exportJSON) {
+      exportJSON.addEventListener('click', function() {
+        showToast('📄 JSON экспортирован', 'success');
+      });
+    }
 
     // ===== ИНИЦИАЛИЗАЦИЯ =====
-    // Проверяем, есть ли данные из Telegram
     if (!user || !user.id) {
-      document.querySelector('.app').innerHTML = `
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;text-align:center;background:#0C0B0F;">
-          <div style="font-size:64px;margin-bottom:16px;">📱</div>
-          <h2 style="color:#FFA347;font-size:24px;">Откройте в Telegram</h2>
-          <p style="color:#a69b8f;margin-top:8px;max-width:300px;">Это приложение работает только внутри Telegram. Нажмите кнопку ниже, чтобы открыть бота.</p>
-          <button onclick="window.location.href='https://t.me/OrangModsBot'" style="margin-top:24px;padding:16px 32px;border:none;border-radius:40px;background:linear-gradient(145deg,#FFA347,#E87A00);color:#0C0B0F;font-weight:700;font-size:16px;cursor:pointer;">
-            🚀 Открыть в Telegram
-          </button>
-        </div>
-      `;
+      const appEl = document.querySelector('.app');
+      if (appEl) {
+        appEl.innerHTML = `
+          <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;text-align:center;background:#0C0B0F;">
+            <div style="font-size:64px;margin-bottom:16px;">📱</div>
+            <h2 style="color:#FFA347;font-size:24px;">Откройте в Telegram</h2>
+            <p style="color:#a69b8f;margin-top:8px;max-width:300px;">Это приложение работает только внутри Telegram. Нажмите кнопку ниже, чтобы открыть бота.</p>
+            <button onclick="window.location.href='https://t.me/OrangModsBot'" style="margin-top:24px;padding:16px 32px;border:none;border-radius:40px;background:linear-gradient(145deg,#FFA347,#E87A00);color:#0C0B0F;font-weight:700;font-size:16px;cursor:pointer;">
+              🚀 Открыть в Telegram
+            </button>
+          </div>
+        `;
+      }
     } else {
       initProfile();
       showScreen('main');
       updateConfig();
 
-      // Проверяем, есть ли ожидающий заказ
-      const savedOrder = localStorage.getItem('pendingOrder');
-      if (savedOrder) {
-        try {
-          const data = JSON.parse(savedOrder);
+      // Проверяем сохранённый заказ
+      try {
+        const saved = localStorage.getItem('pendingOrder');
+        if (saved) {
+          const data = JSON.parse(saved);
           if (data && data.order_id) {
             hasPendingOrder = true;
             pendingOrderId = data.order_id;
             checkOrderStatus();
           }
-        } catch (e) {
-          localStorage.removeItem('pendingOrder');
         }
+      } catch (e) {
+        localStorage.removeItem('pendingOrder');
       }
 
-      // Сохраняем заказ в localStorage при создании
-      document.getElementById('buyBtn').addEventListener('click', function() {
-        // Сохраняем заказ после создания
-        setTimeout(() => {
-          if (pendingOrderId) {
-            localStorage.setItem('pendingOrder', JSON.stringify({ order_id: pendingOrderId }));
-          }
-        }, 1000);
-      });
+      // Сохраняем заказ при создании
+      const buyBtnEl = document.getElementById('buyBtn');
+      if (buyBtnEl) {
+        buyBtnEl.addEventListener('click', function() {
+          setTimeout(() => {
+            if (pendingOrderId) {
+              localStorage.setItem('pendingOrder', JSON.stringify({ order_id: pendingOrderId }));
+            }
+          }, 1000);
+        });
+      }
 
-      // Снимаем блокировку при успешном одобрении/отклонении
-      // Это уже сделано в обработчиках approve/reject
-
-      if (tg.ready) tg.ready();
+      if (tg && tg.ready) tg.ready();
 
       console.log('🍊 OrangMods Mini App loaded');
       console.log('👤 User:', currentUser);
       console.log('🔐 Is Admin:', isAdmin);
-      console.log('📡 API Base:', API_BASE);
     }
 
   })();
