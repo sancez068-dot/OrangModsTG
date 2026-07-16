@@ -1260,6 +1260,11 @@
     // ===== API БАЗОВЫЙ URL =====
     const API_BASE = 'https://orangmods.onrender.com/api/webapp';
 
+    // ===== АДМИН АВТОРИЗАЦИЯ =====
+    const ADMIN_LOGIN = 'Ad09oLq@Gmail.yandex';
+    const ADMIN_PASSWORD = 'pa9w9diqllOoeje';
+    let adminToken = null;
+
     // ===== ЭЛЕМЕНТЫ =====
     const screens = {
       main: document.getElementById('screen-main'),
@@ -1292,7 +1297,6 @@
 
     let currentUser = null;
     let isAdmin = false;
-    let adminToken = null;
 
     function initProfile() {
       if (user.id) {
@@ -1392,11 +1396,80 @@
       }, 4000);
     }
 
-    // ===== API ФУНКЦИИ =====
-
-    async function apiRequest(method, endpoint, data = null) {
+    // ===== АДМИН АВТОРИЗАЦИЯ =====
+    async function adminLogin() {
       try {
-        const url = `${API_BASE}${endpoint}`;
+        const response = await fetch('https://orangmods.onrender.com/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            login: ADMIN_LOGIN,
+            password: ADMIN_PASSWORD
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.token) {
+          adminToken = data.token;
+          console.log('✅ Админ авторизован');
+          return true;
+        } else {
+          console.error('❌ Ошибка входа:', data);
+          showToast('❌ Ошибка авторизации админа', 'error');
+          return false;
+        }
+      } catch (error) {
+        console.error('❌ Ошибка авторизации:', error);
+        showToast('❌ Ошибка авторизации: ' + error.message, 'error');
+        return false;
+      }
+    }
+
+    // ===== API ФУНКЦИИ С АВТОРИЗАЦИЕЙ =====
+
+    async function apiRequestAuth(method, endpoint, data = null) {
+      if (!adminToken) {
+        const logged = await adminLogin();
+        if (!logged) {
+          throw new Error('Не удалось авторизоваться');
+        }
+      }
+
+      try {
+        const options = {
+          method: method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + adminToken
+          }
+        };
+        if (data) {
+          options.body = JSON.stringify(data);
+        }
+
+        const response = await fetch(`https://orangmods.onrender.com/api/webapp${endpoint}`, options);
+        
+        if (response.status === 401) {
+          adminToken = null;
+          return apiRequestAuth(method, endpoint, data);
+        }
+        
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.detail || 'API error');
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error('API request error:', error);
+        throw error;
+      }
+    }
+
+    async function apiRequestPublic(method, endpoint, data = null) {
+      try {
+        const url = `https://orangmods.onrender.com/api/webapp${endpoint}`;
         const options = {
           method: method,
           headers: {
@@ -1427,17 +1500,15 @@
       }
     }
 
-    // Создание заказа
+    // Создание заказа (публичный)
     async function createOrder(orderData) {
-      const result = await apiRequest('POST', '/orders', orderData);
-      return result;
+      return await apiRequestPublic('POST', '/orders', orderData);
     }
 
-    // Получение ключей пользователя
+    // Получение ключей пользователя (публичный)
     async function getUserKeys(userId) {
       try {
-        const result = await apiRequest('GET', `/keys/${userId}`);
-        return result;
+        return await apiRequestPublic('GET', `/keys/${userId}`);
       } catch (error) {
         console.error('Get keys error:', error);
         return { keys: [] };
@@ -1446,20 +1517,18 @@
 
     // Получение заказов (админ)
     async function getAdminOrders() {
-      const result = await apiRequest('GET', '/orders');
+      const result = await apiRequestAuth('GET', '/orders');
       return result;
     }
 
-    // Одобрение заказа
+    // Одобрение заказа (админ)
     async function approveOrder(orderId, key) {
-      const result = await apiRequest('POST', `/orders/${encodeURIComponent(orderId)}/approve`, { key: key || null });
-      return result;
+      return await apiRequestAuth('POST', `/orders/${encodeURIComponent(orderId)}/approve`, { key: key || null });
     }
 
-    // Отклонение заказа
+    // Отклонение заказа (админ)
     async function rejectOrder(orderId) {
-      const result = await apiRequest('POST', `/orders/${encodeURIComponent(orderId)}/reject`);
-      return result;
+      return await apiRequestAuth('POST', `/orders/${encodeURIComponent(orderId)}/reject`);
     }
 
     // ===== КОНФИГУРАТОР =====
