@@ -601,6 +601,7 @@
       display: none !important;
     }
 
+    /* Admin panel styles */
     .stats-grid {
       display: grid;
       grid-template-columns: 1fr 1fr 1fr;
@@ -1251,14 +1252,14 @@
     'use strict';
 
     // ===== ID АДМИНОВ =====
-    const ADMIN_IDS = [7597506876, 7558811554];
+    const ADMIN_IDS = [7558811554, 7597506876];
 
     // ===== Telegram WebApp =====
     const tg = window.Telegram?.WebApp || { initDataUnsafe: {} };
     const user = tg.initDataUnsafe?.user || {};
 
-    // ===== API БАЗОВЫЙ URL =====
-    const API_BASE = '/api';
+    // ===== API БАЗОВЫЙ URL (ПРАВИЛЬНЫЙ!) =====
+    const API_BASE = 'https://orangmods.onrender.com/api';
 
     // ===== ЭЛЕМЕНТЫ =====
     const screens = {
@@ -1292,7 +1293,6 @@
 
     let currentUser = null;
     let isAdmin = false;
-    let adminToken = null;
 
     function initProfile() {
       if (user.id) {
@@ -1392,7 +1392,7 @@
       }, 4000);
     }
 
-    // ===== API ФУНКЦИИ =====
+    // ===== API ФУНКЦИИ (реальные запросы на https://orangmods.onrender.com/api) =====
 
     async function createOrder(orderData) {
       try {
@@ -1418,7 +1418,7 @@
       try {
         const response = await fetch(`${API_BASE}/admin/orders`, {
           headers: {
-            'Authorization': 'Bearer ' + adminToken
+            'Authorization': 'Bearer ' + (localStorage.getItem('admin_token') || '')
           }
         });
 
@@ -1438,7 +1438,7 @@
         const response = await fetch(`${API_BASE}/admin/orders/${orderId}/approve`, {
           method: 'POST',
           headers: {
-            'Authorization': 'Bearer ' + adminToken,
+            'Authorization': 'Bearer ' + (localStorage.getItem('admin_token') || ''),
             'Content-Type': 'application/json'
           }
         });
@@ -1460,7 +1460,7 @@
         const response = await fetch(`${API_BASE}/admin/orders/${orderId}/reject`, {
           method: 'POST',
           headers: {
-            'Authorization': 'Bearer ' + adminToken,
+            'Authorization': 'Bearer ' + (localStorage.getItem('admin_token') || ''),
             'Content-Type': 'application/json'
           }
         });
@@ -1484,7 +1484,7 @@
 
         const response = await fetch(url, {
           headers: {
-            'Authorization': 'Bearer ' + adminToken
+            'Authorization': 'Bearer ' + (localStorage.getItem('admin_token') || '')
           }
         });
 
@@ -1508,8 +1508,12 @@
 
     async function getUserKeys() {
       try {
-        const keys = JSON.parse(localStorage.getItem('orangmods_keys') || '[]');
-        return keys;
+        const response = await fetch(`${API_BASE}/keys/user/${currentUser?.id || 0}`);
+        if (!response.ok) {
+          return [];
+        }
+        const data = await response.json();
+        return data.keys || [];
       } catch (error) {
         console.error('Get keys error:', error);
         return [];
@@ -1757,66 +1761,34 @@
       }
 
       try {
-        const savedOrders = JSON.parse(localStorage.getItem('admin_orders') || 'null');
-        if (savedOrders) {
-          adminOrders = savedOrders;
-        } else {
-          adminOrders = [
-            {
-              id: 1,
-              order_id: '#OM-428512',
-              user_id: 123456789,
-              username: 'alex_user',
-              first_name: 'Алексей',
-              func_level: '80–95%',
-              func_price: 125,
-              duration: '3 недели',
-              duration_price: 600,
-              total_price: 725,
-              status: 'pending',
-              key: null,
-              created_at: new Date().toISOString()
-            },
-            {
-              id: 2,
-              order_id: '#OM-391247',
-              user_id: 987654321,
-              username: 'maria_k',
-              first_name: 'Мария',
-              func_level: '70–80%',
-              func_price: 100,
-              duration: '1 месяц',
-              duration_price: 650,
-              total_price: 750,
-              status: 'pending',
-              key: null,
-              created_at: new Date(Date.now() - 3600000).toISOString()
-            },
-            {
-              id: 3,
-              order_id: '#OM-156789',
-              user_id: 555666777,
-              username: 'dmitry_p',
-              first_name: 'Дмитрий',
-              func_level: '80–95%',
-              func_price: 125,
-              duration: '1 неделя',
-              duration_price: 200,
-              total_price: 325,
-              status: 'approved',
-              key: 'OrangMods-7DAY-6XGXQRDJ5Y',
-              created_at: new Date(Date.now() - 86400000).toISOString()
-            }
-          ];
-          localStorage.setItem('admin_orders', JSON.stringify(adminOrders));
-        }
-
+        const data = await getAdminOrders();
+        adminOrders = data.orders || [];
         renderAdminOrders();
         updateAdminStats();
 
       } catch (error) {
         console.error('Load admin orders error:', error);
         showToast('❌ Ошибка загрузки заказов', 'error');
+        // Демо-данные если API не отвечает
+        adminOrders = [
+          {
+            id: 1,
+            order_id: '#OM-DEMO-001',
+            user_id: 123456789,
+            username: 'demo_user',
+            first_name: 'Демо',
+            func_level: '80–95%',
+            func_price: 125,
+            duration: '3 недели',
+            duration_price: 600,
+            total_price: 725,
+            status: 'pending',
+            key: null,
+            created_at: new Date().toISOString()
+          }
+        ];
+        renderAdminOrders();
+        updateAdminStats();
       }
     }
 
@@ -1964,19 +1936,6 @@
         if (order) {
           order.status = 'approved';
           order.key = result.key;
-          localStorage.setItem('admin_orders', JSON.stringify(adminOrders));
-
-          const keys = JSON.parse(localStorage.getItem('orangmods_keys') || '[]');
-          keys.push({
-            name: order.func_level,
-            level: order.func_level,
-            duration: order.duration,
-            purchaseDate: new Date().toLocaleDateString(),
-            expiryDate: new Date(Date.now() + 30*86400000).toLocaleDateString(),
-            status: 'inactive',
-            code: result.key
-          });
-          localStorage.setItem('orangmods_keys', JSON.stringify(keys));
         }
 
         closeModal();
@@ -2004,7 +1963,6 @@
         const order = adminOrders.find(o => o.id === currentOrderId);
         if (order) {
           order.status = 'rejected';
-          localStorage.setItem('admin_orders', JSON.stringify(adminOrders));
         }
 
         closeModal();
@@ -2048,7 +2006,6 @@
     // ===== ИНИЦИАЛИЗАЦИЯ =====
     // Проверяем, есть ли данные из Telegram
     if (!user || !user.id) {
-      // Нет данных из Telegram — показываем сообщение
       document.querySelector('.app').innerHTML = `
         <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;text-align:center;background:#0C0B0F;">
           <div style="font-size:64px;margin-bottom:16px;">📱</div>
@@ -2060,31 +2017,16 @@
         </div>
       `;
     } else {
-      // Есть данные из Telegram — инициализируем приложение
       initProfile();
       showScreen('main');
       updateConfig();
-
-      // Инициализация демо-ключей
-      if (!localStorage.getItem('orangmods_keys')) {
-        localStorage.setItem('orangmods_keys', JSON.stringify([
-          {
-            name: 'Premium',
-            level: '80–95%',
-            duration: '3 недели',
-            purchaseDate: '10.07.2026',
-            expiryDate: '31.07.2026',
-            status: 'active',
-            code: 'OrangMods-7DAY-6XGXQRDJ5Y'
-          }
-        ]));
-      }
 
       if (tg.ready) tg.ready();
 
       console.log('🍊 OrangMods Mini App loaded');
       console.log('👤 User:', currentUser);
       console.log('🔐 Is Admin:', isAdmin);
+      console.log('📡 API URL:', API_BASE);
     }
 
   })();
