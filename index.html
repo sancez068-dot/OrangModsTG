@@ -4,7 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>OrangMods — Mini App</title>
+  <!-- Telegram WebApp SDK — must be first -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Signal Telegram ASAP so it hides the loading screen -->
+  <script>
+    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.ready) {
+      window.Telegram.WebApp.ready();
+    }
+  </script>
   <style>
     * {
       margin: 0;
@@ -1488,14 +1495,11 @@
         
         if (data.success && data.token) {
           adminToken = data.token;
-          console.log('✅ Админ авторизован');
           return true;
         } else {
-          console.error('❌ Ошибка входа:', data);
           return false;
         }
       } catch (error) {
-        console.error('❌ Ошибка авторизации:', error);
         return false;
       }
     }
@@ -1536,7 +1540,6 @@
         
         return await response.json();
       } catch (error) {
-        console.error('API request error:', error);
         throw error;
       }
     }
@@ -1568,7 +1571,6 @@
 
         return await response.json();
       } catch (error) {
-        console.error('API request error:', error);
         throw error;
       }
     }
@@ -1581,7 +1583,6 @@
       try {
         return await apiRequestPublic('GET', `/keys/${userId}`);
       } catch (error) {
-        console.error('Get keys error:', error);
         return { keys: [] };
       }
     }
@@ -1785,7 +1786,7 @@
             }
           }
         } catch (error) {
-          console.error('Check status error:', error);
+          // silent
         }
       }, 5000);
     }
@@ -1838,7 +1839,6 @@
           }).join('');
         }
 
-        // Обработчики
         document.querySelectorAll('[data-action="toggleKey"]').forEach(btn => {
           btn.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -1875,7 +1875,6 @@
         });
 
       } catch (error) {
-        console.error('Load keys error:', error);
         showToast('❌ Ошибка загрузки ключей', 'error');
       }
     }
@@ -1919,7 +1918,6 @@
         renderAdminOrders();
         updateAdminStats();
       } catch (error) {
-        console.error('Load admin orders error:', error);
         showToast('❌ Ошибка загрузки заказов: ' + error.message, 'error');
       }
     }
@@ -2130,7 +2128,6 @@
           }
 
         } catch (error) {
-          console.error('Approve error:', error);
           showToast('❌ ' + error.message, 'error');
         }
 
@@ -2176,7 +2173,6 @@
           }
 
         } catch (error) {
-          console.error('Reject error:', error);
           showToast('❌ ' + error.message, 'error');
         }
 
@@ -2219,6 +2215,7 @@
     }
 
     // ===== ИНИЦИАЛИЗАЦИЯ =====
+    // Если открыто не в Telegram — показываем заглушку с кнопкой открыть бота
     if (!user || !user.id) {
       const appEl = document.querySelector('.app');
       if (appEl) {
@@ -2264,12 +2261,6 @@
           }, 1000);
         });
       }
-
-      if (tg && tg.ready) tg.ready();
-
-      console.log('🍊 OrangMods Mini App loaded');
-      console.log('👤 User:', currentUser);
-      console.log('🔐 Is Admin:', isAdmin);
     }
 
   })();
