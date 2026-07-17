@@ -470,6 +470,26 @@
     }
     .copy-id-btn:active { transform: scale(0.95); background: rgba(255,140,0,0.20); }
 
+    .send-stars-btn {
+      background: linear-gradient(145deg, #facc15, #eab308);
+      color: #0C0B0F;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 40px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 8px 28px rgba(250, 204, 21, 0.3);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      margin-top: 8px;
+    }
+    .send-stars-btn:active { transform: scale(0.96); }
+
     /* ===== PAYMENT ===== */
     .loader {
       width: 64px; height: 64px;
@@ -777,7 +797,10 @@
         Администратор проверит оплату и выдаст ключ.
       </div>
 
-      <button class="copy-id-btn" id="copyPaymentIdBtn">📋 Скопировать ID</button>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+        <button class="send-stars-btn" id="sendStarsBtn">⭐ Отправить звёзды</button>
+        <button class="copy-id-btn" id="copyPaymentIdBtn">📋 Скопировать ID</button>
+      </div>
     </div>
 
     <button class="btn" id="paidBtn">✅ Я оплатил</button>
@@ -922,6 +945,7 @@
   const API_BASE    = 'https://orangmods.onrender.com/api/webapp';
   const ADMIN_LOGIN = 'Ad09oLq@Gmail.yandex';
   const ADMIN_PASS  = 'pa9w9diqllOoeje';
+  const MOIROUK_USERNAME = 'Moirouk';
 
   const TIERS = [
     { min: 1,  max: 50, price: 40,  label: '1–50%',  color: '#60a5fa' },
@@ -1012,6 +1036,12 @@
    'backFromKeys','backFromKeysBtn','backFromPrices','backFromPricesBtn',
    'backFromAdmin','backFromAdminBtn'].forEach(id => {
     document.getElementById(id)?.addEventListener('click', () => showScreen('main'));
+  });
+
+  // ===== КНОПКА "ОТПРАВИТЬ ЗВЁЗДЫ" =====
+  document.getElementById('sendStarsBtn')?.addEventListener('click', function() {
+    // Открываем профиль Moirouk в Telegram
+    window.location.href = 'https://t.me/' + MOIROUK_USERNAME;
   });
 
   // ===== TOAST =====
@@ -1218,7 +1248,6 @@
         hasPendingOrder = true;
         pendingOrderId  = result.order_id;
         
-        // Показываем экран оплаты с инструкцией
         document.getElementById('paymentOrderId').textContent = result.order_id;
         document.getElementById('paymentAmount').textContent = order.total + '⭐';
         document.getElementById('waitingOrderId').textContent = result.order_id;
@@ -1498,7 +1527,6 @@
     updateSliderUI(78);
     showScreen('main');
 
-    // Проверяем ожидающие заказы при загрузке
     setTimeout(async () => {
       if (currentUser) {
         await checkPendingOrder(currentUser.id);
