@@ -397,6 +397,79 @@
     }
     .total-final .label { font-size: 16px; font-weight: 600; color: #b9b1a8; }
 
+    /* ===== PAYMENT INSTRUCTION ===== */
+    .instruction-card {
+      background: rgba(255,255,255,0.02);
+      border-radius: 24px;
+      padding: 20px 18px;
+      border: 1px solid rgba(255,255,255,0.04);
+      margin: 6px 0 14px;
+      text-align: center;
+    }
+
+    .instruction-card .big-icon {
+      font-size: 48px;
+      margin-bottom: 12px;
+    }
+
+    .instruction-card .order-id {
+      font-family: monospace;
+      font-size: 20px;
+      color: #FFA347;
+      font-weight: 700;
+      letter-spacing: 1px;
+      background: rgba(255,140,0,0.08);
+      padding: 8px 16px;
+      border-radius: 12px;
+      display: inline-block;
+      margin: 8px 0;
+    }
+
+    .instruction-card .price {
+      font-size: 32px;
+      font-weight: 800;
+      color: #FFA347;
+      margin: 8px 0;
+    }
+
+    .instruction-card .receiver {
+      color: #f0ece6;
+      font-weight: 600;
+      font-size: 18px;
+      margin: 6px 0;
+    }
+
+    .instruction-card .receiver span {
+      color: #FFA347;
+    }
+
+    .instruction-card .info-text {
+      color: #a69b8f;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 12px 0;
+    }
+
+    .instruction-card .info-text strong {
+      color: #f0ece6;
+    }
+
+    .copy-id-btn {
+      background: rgba(255,140,0,0.10);
+      border: 1px solid rgba(255,140,0,0.25);
+      color: #FFA347;
+      padding: 8px 20px;
+      border-radius: 30px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .copy-id-btn:active { transform: scale(0.95); background: rgba(255,140,0,0.20); }
+
     /* ===== PAYMENT ===== */
     .loader {
       width: 64px; height: 64px;
@@ -678,21 +751,54 @@
     <div id="purchaseMsg" class="text-muted text-center mt-10" style="font-size:14px;"></div>
   </div>
 
-  <!-- ===== ОЖИДАНИЕ ===== -->
+  <!-- ===== ИНСТРУКЦИЯ ПО ОПЛАТЕ ===== -->
   <div id="screen-payment" class="screen hidden">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
       <span style="font-size:28px;cursor:pointer;" id="backFromPayment">←</span>
+      <h2 style="margin-bottom:0;">💳 Оплата</h2>
+    </div>
+
+    <div class="instruction-card">
+      <div class="big-icon">⭐</div>
+      
+      <div style="font-size:14px;color:#a69b8f;margin-bottom:4px;">Номер заказа</div>
+      <div class="order-id" id="paymentOrderId">#OM-000000</div>
+
+      <div style="font-size:14px;color:#a69b8f;margin-top:12px;">Сумма к оплате</div>
+      <div class="price" id="paymentAmount">0⭐</div>
+
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.04);">
+        <div style="font-size:14px;color:#a69b8f;">Отправьте подарки Telegram пользователю</div>
+        <div class="receiver">👤 <span>Moirouk</span></div>
+      </div>
+
+      <div class="info-text">
+        После отправки нажмите кнопку <strong>«Я оплатил»</strong>.<br>
+        Администратор проверит оплату и выдаст ключ.
+      </div>
+
+      <button class="copy-id-btn" id="copyPaymentIdBtn">📋 Скопировать ID</button>
+    </div>
+
+    <button class="btn" id="paidBtn">✅ Я оплатил</button>
+    <div id="paymentMsg" class="text-muted text-center mt-10" style="font-size:14px;"></div>
+  </div>
+
+  <!-- ===== ОЖИДАНИЕ ПОДТВЕРЖДЕНИЯ ===== -->
+  <div id="screen-waiting" class="screen hidden">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
+      <span style="font-size:28px;cursor:pointer;" id="backFromWaiting">←</span>
       <h2 style="margin-bottom:0;">⏳ Ожидание</h2>
     </div>
     <div style="text-align:center;padding:20px 0;flex:1;display:flex;flex-direction:column;justify-content:center;">
       <div class="loader"></div>
       <h2 style="margin-top:10px;">⏳ Ожидание</h2>
-      <div class="subhead" style="border-left:none;text-align:center;">Ваш заказ отправлен на проверку администратору...</div>
+      <div class="subhead" style="border-left:none;text-align:center;">Ожидаем подтверждение оплаты администратором...</div>
       <div style="margin-top:24px;background:rgba(0,0,0,0.2);padding:14px 18px;border-radius:30px;border:1px solid rgba(255,255,255,0.04);">
         <span style="color:#a69b8f;">ID заказа: <strong id="waitingOrderId" style="color:#FFA347;">#OM-000000</strong></span>
       </div>
       <div class="text-muted mt-16" style="font-size:13px;">Статус обновится после проверки администратором</div>
-      <button class="btn btn-outline" id="backFromPaymentBtn" style="margin-top:28px;">На главную</button>
+      <button class="btn btn-outline" id="backFromWaitingBtn" style="margin-top:28px;">На главную</button>
     </div>
   </div>
 
@@ -852,6 +958,7 @@
     main: document.getElementById('screen-main'),
     purchase: document.getElementById('screen-purchase'),
     payment: document.getElementById('screen-payment'),
+    waiting: document.getElementById('screen-waiting'),
     keys: document.getElementById('screen-keys'),
     prices: document.getElementById('screen-prices'),
     admin: document.getElementById('screen-admin'),
@@ -901,7 +1008,7 @@
     loadAdminOrders(); showScreen('admin');
   });
 
-  ['backFromPurchase','backFromPayment','backFromPaymentBtn',
+  ['backFromPurchase','backFromPayment','backFromWaiting','backFromWaitingBtn',
    'backFromKeys','backFromKeysBtn','backFromPrices','backFromPricesBtn',
    'backFromAdmin','backFromAdminBtn'].forEach(id => {
     document.getElementById(id)?.addEventListener('click', () => showScreen('main'));
@@ -1110,10 +1217,14 @@
       if (result.success) {
         hasPendingOrder = true;
         pendingOrderId  = result.order_id;
-        setText('waitingOrderId', result.order_id);
+        
+        // Показываем экран оплаты с инструкцией
+        document.getElementById('paymentOrderId').textContent = result.order_id;
+        document.getElementById('paymentAmount').textContent = order.total + '⭐';
+        document.getElementById('waitingOrderId').textContent = result.order_id;
+        
         showToast(`✅ Заказ ${result.order_id} создан!`, 'success');
         showScreen('payment');
-        startStatusCheck();
       } else {
         showToast('❌ Ошибка создания заказа', 'error');
       }
@@ -1125,6 +1236,30 @@
 
     this.disabled  = false;
     this.innerHTML = `⭐ Купить за <span id="buyBtnPrice">${order.total}</span>⭐`;
+  });
+
+  // ===== КОПИРОВАТЬ ID ЗАКАЗА =====
+  document.getElementById('copyPaymentIdBtn')?.addEventListener('click', function() {
+    const id = document.getElementById('paymentOrderId').textContent;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(id).then(() => {
+        this.textContent = '✅ Скопировано!';
+        setTimeout(() => { this.textContent = '📋 Скопировать ID'; }, 2000);
+      });
+    } else {
+      alert('ID: ' + id);
+    }
+  });
+
+  // ===== Я ОПЛАТИЛ =====
+  document.getElementById('paidBtn')?.addEventListener('click', function() {
+    if (!pendingOrderId) {
+      showToast('❌ Ошибка: ID заказа не найден', 'error');
+      return;
+    }
+    showToast('✅ Ждём подтверждения администратора', 'info');
+    showScreen('waiting');
+    startStatusCheck();
   });
 
   // ===== ПРОВЕРКА СТАТУСА =====
