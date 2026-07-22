@@ -171,7 +171,6 @@
             display: none !important;
         }
 
-        /* ===== TOP BAR ===== */
         .top-bar {
             display: flex;
             align-items: center;
@@ -214,7 +213,6 @@
             color: #a69b8f;
         }
 
-        /* ===== DASH ===== */
         .dash-grid {
             display: flex;
             flex-direction: column;
@@ -274,7 +272,6 @@
             display: inline-block;
         }
 
-        /* ===== SLIDER SECTION ===== */
         .slider-block {
             background: rgba(255, 255, 255, 0.02);
             border-radius: 24px;
@@ -345,7 +342,6 @@
             margin-right: 6px;
         }
 
-        /* Range input */
         .range-wrap {
             position: relative;
             padding: 0 4px;
@@ -439,7 +435,6 @@
             opacity: 1;
         }
 
-        /* ===== DURATION ===== */
         .duration-block {
             background: rgba(255, 255, 255, 0.02);
             border-radius: 20px;
@@ -514,7 +509,6 @@
             color: #FFA347;
         }
 
-        /* ===== TOTAL BOX ===== */
         .total-box {
             background: rgba(255, 140, 0, 0.04);
             border-radius: 24px;
@@ -555,7 +549,6 @@
             color: #b9b1a8;
         }
 
-        /* ===== PAYMENT INSTRUCTION ===== */
         .instruction-card {
             background: rgba(255, 255, 255, 0.02);
             border-radius: 24px;
@@ -653,7 +646,6 @@
             transform: scale(0.96);
         }
 
-        /* ===== PAYMENT ===== */
         .loader {
             width: 64px;
             height: 64px;
@@ -669,7 +661,6 @@
             }
         }
 
-        /* ===== KEYS ===== */
         .key-item {
             background: rgba(255, 255, 255, 0.02);
             border-radius: 20px;
@@ -719,7 +710,6 @@
             font-size: 13px;
         }
 
-        /* ===== PRICE ===== */
         .price-item {
             display: flex;
             justify-content: space-between;
@@ -740,7 +730,6 @@
             margin-right: 6px;
         }
 
-        /* ===== ADMIN ===== */
         .admin-tabs {
             display: flex;
             gap: 6px;
@@ -763,6 +752,11 @@
             cursor: pointer;
             transition: all 0.25s ease;
             text-align: center;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
         }
         .admin-tab:active {
             transform: scale(0.96);
@@ -771,6 +765,9 @@
             background: rgba(255, 140, 0, 0.15);
             color: #FFA347;
             box-shadow: 0 2px 12px rgba(255, 140, 0, 0.10);
+        }
+        .admin-tab .tab-icon {
+            font-size: 16px;
         }
 
         .admin-panel-content {
@@ -976,7 +973,6 @@
             margin-top: 4px;
         }
 
-        /* ===== DISCOUNT TAB ===== */
         .discount-section {
             background: rgba(255, 255, 255, 0.02);
             border-radius: 16px;
@@ -1179,7 +1175,6 @@
             color: #FFA347;
         }
 
-        /* ===== PRICE EDIT TAB ===== */
         .price-edit-row {
             display: flex;
             align-items: center;
@@ -1218,6 +1213,22 @@
             font-size: 16px;
         }
 
+        .price-edit-section-title {
+            font-weight: 700;
+            font-size: 14px;
+            color: #a69b8f;
+            margin: 14px 0 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .price-edit-section-title:first-of-type {
+            border-top: none;
+            margin-top: 4px;
+            padding-top: 0;
+        }
+
         .price-edit-save {
             margin-top: 12px;
             text-align: right;
@@ -1228,7 +1239,6 @@
             color: #FFA347;
         }
 
-        /* ===== DISCOUNT BADGE ON BUTTON ===== */
         .btn-discount-badge {
             position: absolute;
             top: -10px;
@@ -1274,7 +1284,6 @@
             margin-top: -2px;
         }
 
-        /* ===== MODAL ===== */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -1388,7 +1397,6 @@
             border-color: #FF8C00;
         }
 
-        /* ===== TOAST ===== */
         .toast-container {
             position: fixed;
             top: 20px;
@@ -1456,7 +1464,6 @@
                         <small id="userUsername">@username</small>
                     </div>
                 </div>
-                <!-- Баланс звёзд УБРАН по требованию -->
             </div>
 
             <h2>🍊 OrangMods</h2>
@@ -1508,7 +1515,6 @@
                 <h2 style="margin-bottom:0;">🛒 Конфигуратор</h2>
             </div>
 
-            <!-- СЛАЙДЕР ФУНКЦИОНАЛА -->
             <div style="margin:10px 0 4px;">
                 <div style="font-weight:600;color:#d6cec4;font-size:15px;margin-bottom:8px;">🔓 Функционал</div>
                 <div class="slider-block">
@@ -1558,7 +1564,6 @@
                 </div>
             </div>
 
-            <!-- СРОК -->
             <div style="margin:4px 0 6px;">
                 <div style="font-weight:600;color:#d6cec4;font-size:15px;margin-bottom:8px;">⏳ Срок действия</div>
                 <div class="duration-block">
@@ -1576,7 +1581,6 @@
                 </div>
             </div>
 
-            <!-- ИТОГО -->
             <div class="total-box">
                 <div class="total-row">
                     <span>Функционал</span>
@@ -1702,10 +1706,10 @@
                 <div class="price-item"><span class="p-name">81–95%</span><span class="p-cost" id="pubPrice4">125⭐</span></div>
                 <div style="margin-top:16px;border-top:1px solid rgba(255,255,255,0.04);padding-top:12px;">
                     <div style="font-weight:600;color:#a69b8f;font-size:13px;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">Срок</div>
-                    <div class="price-item"><span class="p-name">1 час</span><span class="p-cost">15⭐</span></div>
-                    <div class="price-item"><span class="p-name">1 день</span><span class="p-cost">50⭐</span></div>
-                    <div class="price-item"><span class="p-name">1 неделя</span><span class="p-cost">200⭐</span></div>
-                    <div class="price-item"><span class="p-name">1 месяц</span><span class="p-cost">650⭐</span></div>
+                    <div class="price-item"><span class="p-name">1 час</span><span class="p-cost" id="pubTimePriceHours">15⭐</span></div>
+                    <div class="price-item"><span class="p-name">1 день</span><span class="p-cost" id="pubTimePriceDays">50⭐</span></div>
+                    <div class="price-item"><span class="p-name">1 неделя</span><span class="p-cost" id="pubTimePriceWeeks">200⭐</span></div>
+                    <div class="price-item"><span class="p-name">1 месяц</span><span class="p-cost" id="pubTimePriceMonths">650⭐</span></div>
                 </div>
             </div>
             <button class="btn btn-outline" id="backFromPricesBtn" style="margin-top:16px;">На главную</button>
@@ -1719,11 +1723,10 @@
             </div>
             <div class="subhead">Управление заказами, скидками и ценами</div>
 
-            <!-- TABS -->
             <div class="admin-tabs">
-                <button class="admin-tab active" data-tab="orders">📋 Заказы</button>
-                <button class="admin-tab" data-tab="discounts">🏷️ Скидки</button>
-                <button class="admin-tab" data-tab="prices">💰 Цены</button>
+                <button class="admin-tab active" data-tab="orders"><span class="tab-icon">📋</span> Заказы</button>
+                <button class="admin-tab" data-tab="discounts"><span class="tab-icon">🏷️</span> Скидки</button>
+                <button class="admin-tab" data-tab="prices"><span class="tab-icon">💰</span> Цены</button>
             </div>
 
             <div class="admin-panel-content">
@@ -1766,7 +1769,6 @@
                 <div class="tab-content" id="tab-discounts">
                     <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
 
-                        <!-- Включить/выключить -->
                         <div class="discount-section">
                             <div class="discount-toggle-row">
                                 <span style="font-weight:600;color:#d6cec4;">🔘 Скидки активны</span>
@@ -1776,7 +1778,6 @@
                             </div>
                         </div>
 
-                        <!-- Применить к -->
                         <div class="discount-section">
                             <div class="section-title">🎯 Применить к</div>
                             <div class="discount-apply-row" id="discountApplyRow">
@@ -1785,7 +1786,6 @@
                             </div>
                         </div>
 
-                        <!-- Настройки для "все варианты" -->
                         <div class="discount-section" id="discountAllSection">
                             <div class="section-title">⚙️ Общая скидка</div>
                             <div class="discount-tier-row">
@@ -1800,15 +1800,11 @@
                             <div style="font-size:12px;color:#666;margin-top:2px;">Для % укажите скидку в процентах, для цены — финальную цену в звёздах</div>
                         </div>
 
-                        <!-- Настройки для "выборочно" -->
                         <div class="discount-section" id="discountSelectiveSection" style="display:none;">
                             <div class="section-title">⚙️ Скидки по диапазонам</div>
-                            <div id="discountTiersContainer">
-                                <!-- генерируется JS -->
-                            </div>
+                            <div id="discountTiersContainer"></div>
                         </div>
 
-                        <!-- Длительность -->
                         <div class="discount-section">
                             <div class="section-title">⏱️ Длительность</div>
                             <div class="discount-duration-row">
@@ -1822,7 +1818,6 @@
                             </div>
                         </div>
 
-                        <!-- Статус -->
                         <div class="discount-status" id="discountStatus">
                             <span class="status-dot inactive" id="discountStatusDot"></span>
                             <span class="status-text" id="discountStatusText">Скидки выключены</span>
@@ -1838,17 +1833,21 @@
                     <div style="flex:1;display:flex;flex-direction:column;gap:4px;">
                         <div class="discount-section">
                             <div class="section-title">💰 Редактирование цен</div>
-                            <div id="priceEditContainer">
-                                <!-- генерируется JS -->
-                            </div>
+
+                            <div class="price-edit-section-title">📊 Функционал (по диапазонам)</div>
+                            <div id="priceEditContainer"></div>
+
+                            <div class="price-edit-section-title">⏳ Срок действия</div>
+                            <div id="priceEditTimeContainer"></div>
+
                             <div class="price-edit-save">
-                                <button class="btn-sm" id="priceSaveBtn">💾 Сохранить цены</button>
+                                <button class="btn-sm" id="priceSaveBtn">💾 Сохранить все цены</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-            </div><!-- /admin-panel-content -->
+            </div>
 
             <button class="btn btn-outline" id="backFromAdminBtn" style="margin-top:12px;">На главную</button>
         </div>
@@ -1885,7 +1884,7 @@
             </div>
         </div>
 
-    </div><!-- /app -->
+    </div>
 
     <script>
         (function() {
@@ -1905,12 +1904,19 @@
                 { id: 'tier4', min: 81, max: 95, price: 125, label: '81–95%', color: '#FFA347', key: '81-95' },
             ];
 
+            const TIME_UNITS = [
+                { id: 'hours', label: '1 час', key: 'hours' },
+                { id: 'days', label: '1 день', key: 'days' },
+                { id: 'weeks', label: '1 неделя', key: 'weeks' },
+                { id: 'months', label: '1 месяц', key: 'months' },
+            ];
+
+            const DEFAULT_TIME_PRICES = { hours: 15, days: 50, weeks: 200, months: 650 };
+            const UNIT_LABELS = { hours: 'часов', days: 'дней', weeks: 'недель', months: 'месяцев' };
+
             function getTier(val) {
                 return TIERS.find(t => val >= t.min && val <= t.max) || TIERS[TIERS.length - 1];
             }
-
-            const UNIT_PRICES = { hours: 15, days: 50, weeks: 200, months: 650 };
-            const UNIT_LABELS = { hours: 'часов', days: 'дней', weeks: 'недель', months: 'месяцев' };
 
             // ===== TELEGRAM =====
             const tg = window.Telegram?.WebApp || { initDataUnsafe: {} };
@@ -1928,18 +1934,19 @@
             let adminSearch = '';
             let currentOrderId = null;
 
-            // ===== DISCOUNTS STATE (хранится в localStorage) =====
+            // ===== DISCOUNTS / PRICES STORAGE =====
             const DISCOUNT_STORAGE_KEY = 'orangmods_discounts';
             const PRICE_STORAGE_KEY = 'orangmods_prices';
+            const TIME_PRICE_STORAGE_KEY = 'orangmods_time_prices';
 
             function getDefaultDiscounts() {
                 return {
                     enabled: false,
-                    applyTo: 'all', // 'all' | 'selective'
-                    duration: 0, // 0 = reset, 6769 = permanent, other = hours
-                    durationUnit: 'hours', // 'hours' | 'days'
-                    startTime: null, // timestamp MSK
-                    allType: 'percentage', // 'percentage' | 'manual'
+                    applyTo: 'all',
+                    duration: 0,
+                    durationUnit: 'hours',
+                    startTime: null,
+                    allType: 'percentage',
                     allValue: 10,
                     tiers: {
                         '1-50': { enabled: false, type: 'percentage', value: 10 },
@@ -1955,7 +1962,6 @@
                     const raw = localStorage.getItem(DISCOUNT_STORAGE_KEY);
                     if (raw) {
                         const parsed = JSON.parse(raw);
-                        // merge with defaults
                         const def = getDefaultDiscounts();
                         for (let k in def) {
                             if (!(k in parsed)) parsed[k] = def[k];
@@ -2001,13 +2007,32 @@
                 localStorage.setItem(PRICE_STORAGE_KEY, JSON.stringify(p));
             }
 
+            function loadTimePrices() {
+                try {
+                    const raw = localStorage.getItem(TIME_PRICE_STORAGE_KEY);
+                    if (raw) {
+                        const parsed = JSON.parse(raw);
+                        const def = { ...DEFAULT_TIME_PRICES };
+                        for (let k in def) {
+                            if (!(k in parsed)) parsed[k] = def[k];
+                        }
+                        return parsed;
+                    }
+                } catch (_) {}
+                return { ...DEFAULT_TIME_PRICES };
+            }
+
+            function saveTimePrices(p) {
+                localStorage.setItem(TIME_PRICE_STORAGE_KEY, JSON.stringify(p));
+            }
+
             let discounts = loadDiscounts();
             let prices = loadPrices();
+            let timePrices = loadTimePrices();
 
-            // ===== MOSCOW TIME HELPERS =====
+            // ===== MOSCOW TIME =====
             function getMoscowTime() {
                 const now = new Date();
-                // MSK = UTC+3
                 return new Date(now.getTime() + (3 * 60 + now.getTimezoneOffset()) * 60000);
             }
 
@@ -2019,16 +2044,12 @@
             function isDiscountActive() {
                 if (!discounts.enabled) return false;
                 const dur = discounts.duration;
-                // 0 = сброшено (не активно)
                 if (dur === 0) return false;
-                // 6769 = постоянно активно
                 if (dur === 6769) return true;
-                // иначе проверяем таймер
                 if (!discounts.startTime) return false;
-                const elapsed = (getMoscowTimestamp() - discounts.startTime) / (1000 * 60 * 60); // hours
+                const elapsed = (getMoscowTimestamp() - discounts.startTime) / (1000 * 60 * 60);
                 const totalHours = discounts.durationUnit === 'days' ? dur * 24 : dur;
                 if (elapsed >= totalHours) {
-                    // истекло — автоматически выключаем
                     discounts.enabled = false;
                     discounts.startTime = null;
                     saveDiscounts(discounts);
@@ -2043,8 +2064,7 @@
                     return null;
                 const totalHours = discounts.durationUnit === 'days' ? discounts.duration * 24 : discounts.duration;
                 const elapsed = (getMoscowTimestamp() - discounts.startTime) / (1000 * 60 * 60);
-                const remaining = Math.max(0, totalHours - elapsed);
-                return remaining;
+                return Math.max(0, totalHours - elapsed);
             }
 
             function getDiscountForTier(tierKey) {
@@ -2065,9 +2085,7 @@
                     const pct = Math.max(0, Math.min(100, d.value));
                     return Math.round(basePrice * (1 - pct / 100));
                 } else {
-                    // manual price
-                    const val = Math.max(0, d.value);
-                    return Math.round(val);
+                    return Math.max(0, d.value);
                 }
             }
 
@@ -2077,11 +2095,9 @@
                 if (d.type === 'percentage') {
                     return Math.max(0, Math.min(100, d.value));
                 } else {
-                    // manual: вычисляем % скидки относительно базовой цены
                     const base = prices[tierKey] || 40;
-                    const discounted = Math.max(0, d.value);
                     if (base <= 0) return 0;
-                    return Math.round((1 - discounted / base) * 100);
+                    return Math.round((1 - Math.max(0, d.value) / base) * 100);
                 }
             }
 
@@ -2159,7 +2175,6 @@
                 if (!isAdmin) { showToast('❌ Доступ запрещён', 'error'); return; }
                 loadAdminOrders();
                 showScreen('admin');
-                // активируем вкладку заказов по умолчанию
                 switchAdminTab('orders');
             });
 
@@ -2170,7 +2185,6 @@
                 document.getElementById(id)?.addEventListener('click', () => showScreen('main'));
             });
 
-            // ===== КНОПКА "ОТПРАВИТЬ ЗВЁЗДЫ" =====
             document.getElementById('sendStarsBtn')?.addEventListener('click', function() {
                 window.location.href = 'https://t.me/' + MOIROUK_USERNAME;
             });
@@ -2238,9 +2252,7 @@
                             return pending;
                         }
                     }
-                } catch (e) {
-                    console.log('Check pending order error:', e);
-                }
+                } catch (e) { console.log('Check pending order error:', e); }
                 hasPendingOrder = false;
                 pendingOrderId = null;
                 return null;
@@ -2293,7 +2305,7 @@
                 numDisplay.textContent = val;
                 tierName.textContent = tier.label;
 
-                if (pct > 0 && isDiscountActive()) {
+                if (pct > 0 && isDiscountActive() && discPrice < basePrice) {
                     tierPriceOriginal.textContent = basePrice + '⭐';
                     tierPriceOriginal.style.display = 'inline';
                     tierPriceFinal.textContent = discPrice + '⭐';
@@ -2308,15 +2320,15 @@
                     z.classList.toggle('active', TIERS[i] === tier);
                 });
 
-                // Обновляем ценовые метки под слайдером
                 TIERS.forEach((t, i) => {
                     const bp = prices[t.key] || t.price;
                     const dp = getDiscountedPrice(bp, t.key);
                     const pp = getDiscountPercentage(t.key);
                     const label = tierPriceLabels[i];
                     if (label) {
-                        if (pp > 0 && isDiscountActive()) {
-                            label.innerHTML = `<span style="text-decoration:line-through;color:#666;font-size:9px;">${bp}⭐</span> ${dp}⭐`;
+                        if (pp > 0 && isDiscountActive() && dp < bp) {
+                            label.innerHTML =
+                                `<span style="text-decoration:line-through;color:#666;font-size:9px;">${bp}⭐</span> ${dp}⭐`;
                         } else {
                             label.textContent = bp + '⭐';
                         }
@@ -2384,21 +2396,25 @@
                 const discPrice = getDiscountedPrice(basePrice, tier.key);
                 const pct = getDiscountPercentage(tier.key);
 
-                const unitPrice = UNIT_PRICES[selectedUnit] || 15;
-                const durationCost = unitPrice * qty;
+                // Стоимость срока с учётом скидки (применяем ту же скидку ко времени)
+                const unitBasePrice = timePrices[selectedUnit] || 15;
+                const unitDiscPrice = getDiscountedPrice(unitBasePrice, tier.key);
+                const durationCost = unitDiscPrice * qty;
+                const durationBaseCost = unitBasePrice * qty;
+
                 const total = discPrice + durationCost;
-                const totalBase = basePrice + durationCost;
+                const totalBase = basePrice + (unitBasePrice * qty);
+
                 const durLabel = qty + ' ' + UNIT_LABELS[selectedUnit];
 
                 setText('totalFuncLabel', sliderValue + '%');
                 setText('totalFuncTier', tier.label);
                 setText('totalDurationLabel', durLabel);
 
-                // Стоимость функционала
                 const funcPriceEl = document.getElementById('totalFuncPrice');
                 const funcOrig = document.getElementById('totalFuncPriceOrig');
                 const funcFinal = document.getElementById('totalFuncPriceFinal');
-                if (pct > 0 && isDiscountActive()) {
+                if (pct > 0 && isDiscountActive() && discPrice < basePrice) {
                     funcOrig.textContent = basePrice + '⭐';
                     funcOrig.style.display = 'inline';
                     funcFinal.textContent = discPrice + '⭐';
@@ -2408,13 +2424,19 @@
                     funcFinal.textContent = basePrice + '⭐';
                 }
 
-                setText('totalDurationPrice', durationCost + '⭐');
+                // Стоимость срока — показываем с учётом скидки
+                const durEl = document.getElementById('totalDurationPrice');
+                if (pct > 0 && isDiscountActive() && unitDiscPrice < unitBasePrice) {
+                    durEl.innerHTML =
+                        `<span class="original" style="color:#888;text-decoration:line-through;font-weight:400;margin-right:4px;">${durationBaseCost}⭐</span> ${durationCost}⭐`;
+                } else {
+                    durEl.textContent = durationCost + '⭐';
+                }
 
-                // Итого
                 const finalEl = document.getElementById('totalFinalPrice');
                 const finalOrig = document.getElementById('totalFinalPriceOrig');
                 const finalFinal = document.getElementById('totalFinalPriceFinal');
-                if (pct > 0 && isDiscountActive() && discPrice < basePrice) {
+                if (pct > 0 && isDiscountActive() && total < totalBase) {
                     finalOrig.textContent = totalBase + '⭐';
                     finalOrig.style.display = 'inline';
                     finalFinal.textContent = total + '⭐';
@@ -2435,13 +2457,13 @@
                     unit: selectedUnit,
                     qty: qty,
                     durationCost: durationCost,
+                    durationBaseCost: durationBaseCost,
                     total: total,
                     totalBase: totalBase,
                     durLabel: durLabel,
                     tierKey: tier.key,
                 };
 
-                // Обновляем бейдж на кнопке
                 const badge = document.getElementById('discountBadge');
                 const badgePct = document.getElementById('badgePct');
                 if (pct > 0 && isDiscountActive()) {
@@ -2457,12 +2479,11 @@
                 if (el) el.textContent = val;
             }
 
-            // ===== ОБНОВЛЕНИЕ ЦЕН ПРИ ПОКУПКЕ =====
             function updatePurchasePrices() {
                 updateSliderUI(sliderValue);
             }
 
-            // ===== ОБНОВЛЕНИЕ ПУБЛИЧНОГО ПРАЙСА =====
+            // ===== ПУБЛИЧНЫЙ ПРАЙС =====
             function updatePublicPrices() {
                 TIERS.forEach((t, i) => {
                     const el = document.getElementById('pubPrice' + (i + 1));
@@ -2470,6 +2491,23 @@
                     const base = prices[t.key] || t.price;
                     const disc = getDiscountedPrice(base, t.key);
                     const pct = getDiscountPercentage(t.key);
+                    if (pct > 0 && isDiscountActive() && disc < base) {
+                        el.innerHTML =
+                            `<span class="original" style="color:#888;text-decoration:line-through;font-weight:400;margin-right:4px;">${base}⭐</span> ${disc}⭐`;
+                    } else {
+                        el.textContent = base + '⭐';
+                    }
+                });
+
+                // Время
+                const timeKeys = ['hours', 'days', 'weeks', 'months'];
+                timeKeys.forEach((k) => {
+                    const el = document.getElementById('pubTimePrice' + k.charAt(0).toUpperCase() + k.slice(1));
+                    if (!el) return;
+                    const base = timePrices[k] || 15;
+                    const tier = TIERS[0];
+                    const disc = getDiscountedPrice(base, tier.key);
+                    const pct = getDiscountPercentage(tier.key);
                     if (pct > 0 && isDiscountActive() && disc < base) {
                         el.innerHTML =
                             `<span class="original" style="color:#888;text-decoration:line-through;font-weight:400;margin-right:4px;">${base}⭐</span> ${disc}⭐`;
@@ -2523,8 +2561,7 @@
 
                 this.disabled = false;
                 this.innerHTML =
-                `⭐ Купить за <span id="buyBtnPrice">${order.total}</span>⭐`;
-                // восстановить бейдж
+                    `⭐ Купить за <span id="buyBtnPrice">${order.total}</span>⭐`;
                 const pct = getDiscountPercentage(order.tierKey);
                 const badge = document.getElementById('discountBadge');
                 const badgePct = document.getElementById('badgePct');
@@ -2536,7 +2573,6 @@
                 }
             });
 
-            // ===== КОПИРОВАТЬ ID =====
             document.getElementById('copyPaymentIdBtn')?.addEventListener('click', function() {
                 const id = document.getElementById('paymentOrderId').textContent;
                 if (navigator.clipboard) {
@@ -2549,7 +2585,6 @@
                 }
             });
 
-            // ===== Я ОПЛАТИЛ =====
             document.getElementById('paidBtn')?.addEventListener('click', function() {
                 if (!pendingOrderId) {
                     showToast('❌ Ошибка: ID заказа не найден', 'error');
@@ -2560,7 +2595,6 @@
                 startStatusCheck();
             });
 
-            // ===== ПРОВЕРКА СТАТУСА =====
             function startStatusCheck() {
                 if (statusCheckInterval) clearInterval(statusCheckInterval);
                 statusCheckInterval = setInterval(async () => {
@@ -2625,7 +2659,7 @@
                 } catch (e) { showToast('❌ Ошибка загрузки ключей', 'error'); }
             }
 
-            // ===== ADMIN LOAD =====
+            // ===== ADMIN =====
             async function loadAdminOrders() {
                 if (!isAdmin) return;
                 try {
@@ -2732,7 +2766,6 @@
                 document.getElementById('downloadOptions')?.classList.toggle('visible', this.checked);
             });
 
-            // ===== ОДОБРИТЬ =====
             document.getElementById('approveBtn')?.addEventListener('click', async function() {
                 if (currentOrderId === null) return;
                 const o = adminOrders.find(o => o.id === currentOrderId);
@@ -2765,7 +2798,6 @@
                 this.textContent = '✅ Одобрить';
             });
 
-            // ===== ОТКЛОНИТЬ =====
             document.getElementById('rejectBtn')?.addEventListener('click', async function() {
                 if (currentOrderId === null) return;
                 const o = adminOrders.find(o => o.id === currentOrderId);
@@ -2789,7 +2821,6 @@
                 this.textContent = '❌ Отклонить';
             });
 
-            // ===== ФИЛЬТРЫ / ПОИСК / ЭКСПОРТ =====
             document.querySelectorAll('#screen-admin .filter-tab').forEach(tab => {
                 tab.addEventListener('click', function() {
                     document.querySelectorAll('#screen-admin .filter-tab').forEach(t => t.classList.remove(
@@ -2842,10 +2873,8 @@
                 const statusText = document.getElementById('discountStatusText');
                 const statusTimer = document.getElementById('discountStatusTimer');
 
-                // Toggle
                 toggle.classList.toggle('active', discounts.enabled);
 
-                // Apply mode
                 applyRow.querySelectorAll('.btn-sm').forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.apply === discounts.applyTo);
                 });
@@ -2861,13 +2890,11 @@
                     renderDiscountTiers();
                 }
 
-                // Duration
                 document.getElementById('discountDurationValue').value = discounts.duration || 0;
                 document.querySelectorAll('.dur-unit-btn').forEach(btn => {
                     btn.classList.toggle('active', btn.dataset.durUnit === (discounts.durationUnit || 'hours'));
                 });
 
-                // Status
                 const active = isDiscountActive();
                 statusDot.className = 'status-dot ' + (active ? 'active' : 'inactive');
                 statusText.textContent = active ? '✅ Скидки активны' : '⛔ Скидки выключены';
@@ -2889,10 +2916,7 @@
                     statusTimer.textContent = '';
                 }
 
-                // Обновляем превью для "все варианты"
                 updateDiscountAllPreview();
-
-                // Обновляем цены в покупке, если она открыта
                 updatePurchasePrices();
                 updatePublicPrices();
             }
@@ -2918,12 +2942,10 @@
                   </div>`;
                 }).join('');
 
-                // События для обновления превью
                 container.querySelectorAll('.tier-check, .tier-type, .tier-value').forEach(el => {
                     el.addEventListener('change', updateTierPreview);
                     el.addEventListener('input', updateTierPreview);
                 });
-                // Также обновляем при клике на чекбокс
                 container.querySelectorAll('.tier-check').forEach(el => {
                     el.addEventListener('change', function() {
                         const row = this.closest('.discount-tier-row');
@@ -2970,7 +2992,6 @@
                 const val = parseFloat(document.getElementById('discountAllValue').value) || 0;
                 const preview = document.getElementById('discountAllPreview');
                 if (!preview) return;
-                // Показываем пример для первого тира
                 const base = prices['1-50'] || 40;
                 if (type === 'percentage') {
                     const dp = Math.round(base * (1 - Math.min(100, Math.max(0, val)) / 100));
@@ -2980,9 +3001,7 @@
                 }
             }
 
-            // ===== СОХРАНЕНИЕ СКИДОК =====
             document.getElementById('discountSaveBtn')?.addEventListener('click', function() {
-                // Собрать данные
                 const enabled = document.getElementById('discountToggle').classList.contains('active');
                 const applyTo = document.querySelector('#discountApplyRow .btn-sm.active')?.dataset.apply || 'all';
 
@@ -3008,12 +3027,10 @@
                     });
                 }
 
-                // Проверка на 0 = сброс
                 if (duration === 0) {
                     discounts.enabled = false;
                     discounts.startTime = null;
                     discounts.duration = 0;
-                    // сохраняем остальное
                     discounts.applyTo = applyTo;
                     discounts.durationUnit = durationUnit;
                     if (applyTo === 'all') {
@@ -3028,10 +3045,8 @@
                     return;
                 }
 
-                // 6769 = постоянно
                 const isPermanent = duration === 6769;
 
-                // Сохраняем
                 discounts.enabled = enabled;
                 discounts.applyTo = applyTo;
                 discounts.duration = duration;
@@ -3044,11 +3059,9 @@
                     discounts.tiers = tiersData;
                 }
 
-                // Если включено и не 0, устанавливаем startTime если его нет
                 if (enabled && duration !== 0 && !discounts.startTime) {
                     discounts.startTime = getMoscowTimestamp();
                 }
-                // Если выключено или 0 — сбрасываем startTime
                 if (!enabled || duration === 0) {
                     discounts.startTime = null;
                 }
@@ -3056,19 +3069,14 @@
                 saveDiscounts(discounts);
                 updateDiscountUI();
                 showToast('💾 Скидки сохранены!', 'success');
-
-                // Обновляем цены в покупке
                 updatePurchasePrices();
                 updatePublicPrices();
             });
 
-            // ===== TOGGLE =====
             document.getElementById('discountToggle')?.addEventListener('click', function() {
                 this.classList.toggle('active');
                 const enabled = this.classList.contains('active');
-                // Если включаем и duration = 0, ставим старт
                 if (enabled && discounts.duration === 0) {
-                    // Если duration = 0, ставим 24 часа по умолчанию
                     discounts.duration = 24;
                     discounts.durationUnit = 'hours';
                     document.getElementById('discountDurationValue').value = 24;
@@ -3090,7 +3098,6 @@
                 showToast(enabled ? '✅ Скидки включены' : '⛔ Скидки выключены', enabled ? 'success' : 'info');
             });
 
-            // ===== APPLY BUTTONS =====
             document.querySelectorAll('#discountApplyRow .btn-sm').forEach(btn => {
                 btn.addEventListener('click', function() {
                     document.querySelectorAll('#discountApplyRow .btn-sm').forEach(b => b.classList.remove(
@@ -3111,7 +3118,6 @@
                 });
             });
 
-            // ===== DURATION UNIT =====
             document.querySelectorAll('.dur-unit-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     document.querySelectorAll('.dur-unit-btn').forEach(b => b.classList.remove('active'));
@@ -3122,7 +3128,6 @@
                 });
             });
 
-            // ===== ALL TYPE/VALUE CHANGE =====
             document.getElementById('discountAllType')?.addEventListener('change', updateDiscountAllPreview);
             document.getElementById('discountAllValue')?.addEventListener('input', updateDiscountAllPreview);
 
@@ -3141,32 +3146,58 @@
                     </div>
                   </div>`;
                 }).join('');
+
+                // Время
+                const timeContainer = document.getElementById('priceEditTimeContainer');
+                if (timeContainer) {
+                    timeContainer.innerHTML = TIME_UNITS.map(u => {
+                        const val = timePrices[u.key] ?? 15;
+                        return `
+                    <div class="price-edit-row" data-time-key="${u.key}">
+                      <span class="p-label">${u.label}</span>
+                      <div class="p-input-wrap">
+                        <input type="number" class="time-price-input" value="${val}" min="0" step="1">
+                        <span class="p-currency">⭐</span>
+                      </div>
+                    </div>`;
+                    }).join('');
+                }
             }
 
             document.getElementById('priceSaveBtn')?.addEventListener('click', function() {
                 const inputs = document.querySelectorAll('#priceEditContainer .price-input');
                 const newPrices = {};
                 const rows = document.querySelectorAll('#priceEditContainer .price-edit-row');
-                rows.forEach((row, i) => {
+                rows.forEach((row) => {
                     const key = row.dataset.tier;
                     const val = parseFloat(row.querySelector('.price-input').value) || 0;
                     newPrices[key] = val;
                 });
                 prices = newPrices;
                 savePrices(prices);
-                showToast('💾 Цены сохранены!', 'success');
+
+                // Время
+                const timeInputs = document.querySelectorAll('#priceEditTimeContainer .time-price-input');
+                const newTimePrices = {};
+                const timeRows = document.querySelectorAll('#priceEditTimeContainer .price-edit-row');
+                timeRows.forEach((row) => {
+                    const key = row.dataset.timeKey;
+                    const val = parseFloat(row.querySelector('.time-price-input').value) || 0;
+                    newTimePrices[key] = val;
+                });
+                timePrices = newTimePrices;
+                saveTimePrices(timePrices);
+
+                showToast('💾 Все цены сохранены!', 'success');
                 updatePurchasePrices();
                 updatePublicPrices();
-                // обновить скидки UI (превью)
                 updateDiscountUI();
             });
 
-            // ===== ТАЙМЕР ДЛЯ СКИДОК (периодическая проверка) =====
+            // ===== ТАЙМЕР ДЛЯ СКИДОК =====
             setInterval(() => {
-                // Проверяем, не истекла ли скидка
                 const active = isDiscountActive();
                 if (discounts.enabled && !active && discounts.duration !== 0 && discounts.duration !== 6769) {
-                    // скидка истекла — выключаем
                     discounts.enabled = false;
                     discounts.startTime = null;
                     saveDiscounts(discounts);
@@ -3175,16 +3206,14 @@
                     updatePublicPrices();
                     showToast('⏰ Скидка истекла', 'info');
                 } else {
-                    // Обновляем таймер в UI
                     if (document.getElementById('tab-discounts').classList.contains('active')) {
                         updateDiscountUI();
                     }
-                    // Также обновляем бейдж на покупке, если она открыта
                     if (document.getElementById('screen-purchase').classList.contains('active')) {
                         updateConfig();
                     }
                 }
-            }, 30000); // каждые 30 секунд
+            }, 30000);
 
             // ===== ИНИЦИАЛИЗАЦИЯ =====
             if (!user?.id) {
@@ -3199,7 +3228,6 @@
                 </div>`;
             } else {
                 initProfile();
-                // Инициализируем UI скидок
                 updateDiscountUI();
                 renderPriceEdit();
                 updateSliderUI(78);
@@ -3215,9 +3243,8 @@
                 }, 1000);
             }
 
-            // Expose для консоли
-            window.__debug = { discounts, prices, TIERS, getDiscountForTier, getDiscountedPrice, isDiscountActive,
-                getMoscowTimestamp };
+            window.__debug = { discounts, prices, timePrices, TIERS, getDiscountForTier, getDiscountedPrice,
+                isDiscountActive, getMoscowTimestamp };
 
         })();
     </script>
